@@ -29,7 +29,7 @@ inline void int2str(int c, int base, char *ret)
 
 int main(int argc, char *argv[])
 {
-	int i, l, n = 1000, ret;
+	int i, n = 1000, ret;
 	khash_t(str) *h, *h2;
 	khint_t k;
 	h = kh_init(str);
