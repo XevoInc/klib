@@ -2,7 +2,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "kvec.h"
+#include <klib/kvec.h>
 
 int main()
 {

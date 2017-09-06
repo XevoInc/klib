@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "khash.h"
+#include <klib/khash.h>
 KHASH_SET_INIT_STR(str)
 KHASH_MAP_INIT_INT(int, unsigned char)
 
