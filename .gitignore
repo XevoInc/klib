@@ -27,3 +27,5 @@ test/khash_keith
 test/khash_keith2
 test/khash_test
 test/kvec_test
+
+build/**
