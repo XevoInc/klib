@@ -1,6 +1,6 @@
 CC=gcc
 CXX=g++
-CFLAGS=-g -Wall -O2 -I..
+CFLAGS=-g -Wall -O2 -I../include
 CXXFLAGS=$(CFLAGS)
 PROGS=khash_keith khash_keith2 khash_test kvec_test
 

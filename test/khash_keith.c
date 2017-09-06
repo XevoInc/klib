@@ -10,7 +10,7 @@
  * extremely inefficient.
  */
 #include <stdio.h>
-#include "khash.h"
+#include <klib/khash.h>
 KHASH_MAP_INIT_STR(str, int)
 
 inline void int2str(int c, int base, char *ret)
