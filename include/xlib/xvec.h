@@ -26,14 +26,14 @@
 /*
   An example:
 
-#include "kvec.h"
+#include "xvec.h"
 int main() {
-	kvec_t(int) array;
-	kv_init(array);
-	kv_push(int, array, 10); // append
-	kv_a(int, array, 20) = 5; // dynamic
-	kv_A(array, 20) = 4; // static
-	kv_destroy(array);
+	xvec_t(int) array;
+	xv_init(array);
+	xv_push(int, array, 10); // append
+	xv_a(int, array, 20) = 5; // dynamic
+	xv_A(array, 20) = 4; // static
+	xv_destroy(array);
 	return 0;
 }
 */
@@ -45,32 +45,32 @@ int main() {
 
 */
 
-#ifndef AC_KVEC_H
-#define AC_KVEC_H
+#ifndef AC_XVEC_H
+#define AC_XVEC_H
 
 #include <stdlib.h>
 
-#define kv_roundup32(x) (--(x), (x)|=(x)>>1, (x)|=(x)>>2, (x)|=(x)>>4, (x)|=(x)>>8, (x)|=(x)>>16, ++(x))
+#define xv_roundup32(x) (--(x), (x)|=(x)>>1, (x)|=(x)>>2, (x)|=(x)>>4, (x)|=(x)>>8, (x)|=(x)>>16, ++(x))
 
-#define kvec_t(type) struct { size_t n, m; type *a; }
-#define kv_init(v) ((v).n = (v).m = 0, (v).a = 0)
-#define kv_destroy(v) free((v).a)
-#define kv_A(v, i) ((v).a[(i)])
-#define kv_pop(v) ((v).a[--(v).n])
-#define kv_size(v) ((v).n)
-#define kv_max(v) ((v).m)
-#define kv_data(v) ((v).a)
+#define xvec_t(type) struct { size_t n, m; type *a; }
+#define xv_init(v) ((v).n = (v).m = 0, (v).a = 0)
+#define xv_destroy(v) free((v).a)
+#define xv_A(v, i) ((v).a[(i)])
+#define xv_pop(v) ((v).a[--(v).n])
+#define xv_size(v) ((v).n)
+#define xv_max(v) ((v).m)
+#define xv_data(v) ((v).a)
 
-#define kv_resize(type, v, s)  ((v).m = (s), (v).a = (type*)realloc((v).a, sizeof(type) * (v).m))
-#define kv_trim(type, v) (kv_resize(type, v, kv_size(v)))
+#define xv_resize(type, v, s)  ((v).m = (s), (v).a = (type*)realloc((v).a, sizeof(type) * (v).m))
+#define xv_trim(type, v) (xv_resize(type, v, xv_size(v)))
 
-#define kv_copy(type, v1, v0) do {							\
-		if ((v1).m < (v0).n) kv_resize(type, v1, (v0).n);	\
+#define xv_copy(type, v1, v0) do {							\
+		if ((v1).m < (v0).n) xv_resize(type, v1, (v0).n);	\
 		(v1).n = (v0).n;									\
 		memcpy((v1).a, (v0).a, sizeof(type) * (v0).n);		\
 	} while (0)												\
 
-#define kv_push(type, v, x) do {									\
+#define xv_push(type, v, x) do {									\
 		if ((v).n == (v).m) {										\
 			(v).m = (v).m? (v).m<<1 : 2;							\
 			(v).a = (type*)realloc((v).a, sizeof(type) * (v).m);	\
@@ -78,13 +78,13 @@ int main() {
 		(v).a[(v).n++] = (x);										\
 	} while (0)
 
-#define kv_pushp(type, v) ((((v).n == (v).m)?							\
+#define xv_pushp(type, v) ((((v).n == (v).m)?							\
 						   ((v).m = ((v).m? (v).m<<1 : 2),				\
 							(v).a = (type*)realloc((v).a, sizeof(type) * (v).m), 0)	\
 						   : 0), ((v).a + ((v).n++)))
 
-#define kv_a(type, v, i) (((v).m <= (size_t)(i)? \
-						  ((v).m = (v).n = (i) + 1, kv_roundup32((v).m), \
+#define xv_a(type, v, i) (((v).m <= (size_t)(i)? \
+						  ((v).m = (v).n = (i) + 1, xv_roundup32((v).m), \
 						   (v).a = (type*)realloc((v).a, sizeof(type) * (v).m), 0) \
 						  : (v).n <= (size_t)(i)? (v).n = (i) + 1 \
 						  : 0), (v).a[(i)])

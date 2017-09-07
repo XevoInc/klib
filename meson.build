@@ -1,4 +1,4 @@
-project('klib', 'c', 'cpp',
+project('xlib', 'c', 'cpp',
     version: '0.1',
     license: 'mit',
     default_options: [
@@ -11,22 +11,22 @@ project('klib', 'c', 'cpp',
 
 # Includes.
 include = include_directories('include')
-install_subdir('include/klib', install_dir: 'include')
+install_subdir('include/xlib', install_dir: 'include')
 
 # pkg-config
 pkg = import('pkgconfig')
 pkg.generate(
-    name: 'klib',
+    name: 'xlib',
     description: 'A generic, type-safe C containers library',
     version: meson.project_version())
-klib_dep = declare_dependency(include_directories: include)
+xlib_dep = declare_dependency(include_directories: include)
 
 # Tests.
 tests = [
-    ['khash', ['test/khash_test.c']],
-    ['khash_keith', ['test/khash_keith.c']],
-    ['khash_keith2', ['test/khash_keith2.c']],
-    ['kvec', ['test/kvec_test.cc']]
+    ['xhash', ['test/xhash_test.c']],
+    ['xhash_keith', ['test/xhash_keith.c']],
+    ['xhash_keith2', ['test/xhash_keith2.c']],
+    ['xvec', ['test/xvec_test.cpp']]
 ]
 
 foreach t : tests

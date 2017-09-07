@@ -12,8 +12,8 @@
 #define _POSIX_C_SOURCE 200809L
 #include <stdio.h>
 #include <string.h>
-#include <klib/khash.h>
-KHASH_MAP_INIT_STR(str, int)
+#include <xlib/xhash.h>
+XHASH_MAP_INIT_STR(str, int)
 
 static inline void int2str(int c, int base, char *ret)
 {
@@ -32,38 +32,38 @@ static inline void int2str(int c, int base, char *ret)
 int main(int argc, char *argv[])
 {
 	int i, n = 1000, ret;
-	khash_t(str) *h, *h2;
-	khint_t k;
-	h = kh_init(str);
-	h2 = kh_init(str);
+	xhash_t(str) *h, *h2;
+	xhint_t k;
+	h = xh_init(str);
+	h2 = xh_init(str);
 	if (argc > 1) n = atoi(argv[1]);
 	for (i = 0; i < 10000; ++i) {
 		char buf[32];
 		strcpy(buf, "foo_");
 		int2str(i, 10, buf+4);
-		k = kh_put(str, h, strdup(buf), &ret);
-		kh_val(h, k) = i;
+		k = xh_put(str, h, strdup(buf), &ret);
+		xh_val(h, k) = i;
 	}
 	for (i = 0; i < n; ++i) {
-		for (k = kh_begin(h); k != kh_end(h); ++k) {
-			if (kh_exist(h, k)) {
-				khint_t k2 = kh_put(str, h2, kh_key(h, k), &ret);
+		for (k = xh_begin(h); k != xh_end(h); ++k) {
+			if (xh_exist(h, k)) {
+				xhint_t k2 = xh_put(str, h2, xh_key(h, k), &ret);
 				if (ret) { // absent
-					kh_key(h2, k2) = strdup(kh_key(h, k));
-					kh_val(h2, k2) = kh_val(h, k);
-				} else kh_val(h2, k2) += kh_val(h, k);
+					xh_key(h2, k2) = strdup(xh_key(h, k));
+					xh_val(h2, k2) = xh_val(h, k);
+				} else xh_val(h2, k2) += xh_val(h, k);
 			}
 		}
 	}
-	k = kh_get(str, h, "foo_1"); printf("%d", kh_val(h, k));
-	k = kh_get(str, h, "foo_9999"); printf(" %d", kh_val(h, k));
-	k = kh_get(str, h2, "foo_1"); printf(" %d", kh_val(h2, k));
-	k = kh_get(str, h2, "foo_9999"); printf(" %d\n", kh_val(h2, k));
-	for (k = kh_begin(h); k != kh_end(h); ++k)
-		if (kh_exist(h, k)) free((char*)kh_key(h, k));
-	for (k = kh_begin(h2); k != kh_end(h2); ++k)
-		if (kh_exist(h2, k)) free((char*)kh_key(h2, k));
-	kh_destroy(str, h);
-	kh_destroy(str, h2);
+	k = xh_get(str, h, "foo_1"); printf("%d", xh_val(h, k));
+	k = xh_get(str, h, "foo_9999"); printf(" %d", xh_val(h, k));
+	k = xh_get(str, h2, "foo_1"); printf(" %d", xh_val(h2, k));
+	k = xh_get(str, h2, "foo_9999"); printf(" %d\n", xh_val(h2, k));
+	for (k = xh_begin(h); k != xh_end(h); ++k)
+		if (xh_exist(h, k)) free((char*)xh_key(h, k));
+	for (k = xh_begin(h2); k != xh_end(h2); ++k)
+		if (xh_exist(h2, k)) free((char*)xh_key(h2, k));
+	xh_destroy(str, h);
+	xh_destroy(str, h2);
 	return 0;
 }
