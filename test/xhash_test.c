@@ -66,7 +66,7 @@ void ht_xhash_int()
 		xh_val(h, k) = i&0xff;
 		if (!ret) xh_del(int, h, k);
 	}
-	printf("[ht_xhash_int] size: %u\n", xh_size(h));
+	printf("[ht_xhash_int] size: %lu\n", xh_size(h));
 	xh_destroy(int, h);
 }
 
@@ -82,7 +82,7 @@ void ht_xhash_str()
 		k = xh_put(str, h, data[i], &ret);
 		if (!ret) xh_del(str, h, k);
 	}
-	printf("[ht_xhash_int] size: %u\n", xh_size(h));
+	printf("[ht_xhash_int] size: %lu\n", xh_size(h));
 	xh_destroy(str, h);
 }
 
@@ -100,7 +100,7 @@ void ht_xhash_unpack()
 		k = xh_put(iun, h, x, &ret);
 		if (!ret) xh_del(iun, h, k);
 	}
-	printf("[ht_xhash_unpack] size: %u (sizeof=%ld)\n", xh_size(h), sizeof(int_unpack_t));
+	printf("[ht_xhash_unpack] size: %lu (sizeof=%ld)\n", xh_size(h), sizeof(int_unpack_t));
 	xh_destroy(iun, h);
 }
 
@@ -118,7 +118,7 @@ void ht_xhash_packed()
 		k = xh_put(ipk, h, x, &ret);
 		if (!ret) xh_del(ipk, h, k);
 	}
-	printf("[ht_xhash_packed] size: %u (sizeof=%ld)\n", xh_size(h), sizeof(int_packed_t));
+	printf("[ht_xhash_packed] size: %lu (sizeof=%ld)\n", xh_size(h), sizeof(int_packed_t));
 	xh_destroy(ipk, h);
 }
 
