@@ -2,7 +2,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <klib/kvec.h>
+#include <xlib/xvec.h>
 
 int main()
 {
@@ -32,23 +32,23 @@ int main()
 		   (float)(clock() - t) / CLOCKS_PER_SEC);
 	t = clock();
 	for (i = 0; i < M; ++i) {
-		kvec_t(int) array;
-		kv_init(array);
-		kv_resize(int, array, N);
-		for (j = 0; j < N; ++j) kv_a(int, array, j) = j;
-		kv_destroy(array);
+		xvec_t(int) array;
+		xv_init(array);
+		xv_resize(int, array, N);
+		for (j = 0; j < N; ++j) xv_a(int, array, j) = j;
+		xv_destroy(array);
 	}
-	printf("C vector, dynamic(kv_a): %.3f sec\n",
+	printf("C vector, dynamic(xv_a): %.3f sec\n",
 		   (float)(clock() - t) / CLOCKS_PER_SEC);
 	t = clock();
 	for (i = 0; i < M; ++i) {
-		kvec_t(int) array;
-		kv_init(array);
+		xvec_t(int) array;
+		xv_init(array);
 		for (j = 0; j < N; ++j)
-			kv_push(int, array, j);
-		kv_destroy(array);
+			xv_push(int, array, j);
+		xv_destroy(array);
 	}
-	printf("C vector, dynamic(kv_push): %.3f sec\n",
+	printf("C vector, dynamic(xv_push): %.3f sec\n",
 		   (float)(clock() - t) / CLOCKS_PER_SEC);
 	t = clock();
 	for (i = 0; i < M; ++i) {

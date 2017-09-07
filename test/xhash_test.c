@@ -4,10 +4,10 @@
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
+#include <xlib/xhash.h>
 
-#include <klib/khash.h>
-KHASH_SET_INIT_STR(str)
-KHASH_MAP_INIT_INT(int, unsigned char)
+XHASH_SET_INIT_STR(str)
+XHASH_MAP_INIT_INT(int, unsigned char)
 
 typedef struct {
 	unsigned key;
@@ -22,8 +22,8 @@ typedef struct {
 #define hash_eq(a, b) ((a).key == (b).key)
 #define hash_func(a) ((a).key)
 
-KHASH_INIT(iun, int_unpack_t, char, 0, hash_func, hash_eq)
-KHASH_INIT(ipk, int_packed_t, char, 0, hash_func, hash_eq)
+XHASH_INIT(iun, int_unpack_t, char, 0, hash_func, hash_eq)
+XHASH_INIT(ipk, int_packed_t, char, 0, hash_func, hash_eq)
 
 static int data_size = 5000000;
 static unsigned *int_data;
@@ -33,7 +33,7 @@ void ht_init_data()
 {
 	int i;
 	char buf[256];
-	khint32_t x = 11;
+	xhint32_t x = 11;
 	printf("--- generating data... ");
 	int_data = (unsigned*)calloc(data_size, sizeof(unsigned));
 	str_data = (char**)calloc(data_size, sizeof(char*));
@@ -53,73 +53,73 @@ void ht_destroy_data()
 	free(str_data); free(int_data);
 }
 
-void ht_khash_int()
+void ht_xhash_int()
 {
 	int i, ret;
 	unsigned *data = int_data;
-	khash_t(int) *h;
+	xhash_t(int) *h;
 	unsigned k;
 
-	h = kh_init(int);
+	h = xh_init(int);
 	for (i = 0; i < data_size; ++i) {
-		k = kh_put(int, h, data[i], &ret);
-		kh_val(h, k) = i&0xff;
-		if (!ret) kh_del(int, h, k);
+		k = xh_put(int, h, data[i], &ret);
+		xh_val(h, k) = i&0xff;
+		if (!ret) xh_del(int, h, k);
 	}
-	printf("[ht_khash_int] size: %u\n", kh_size(h));
-	kh_destroy(int, h);
+	printf("[ht_xhash_int] size: %u\n", xh_size(h));
+	xh_destroy(int, h);
 }
 
-void ht_khash_str()
+void ht_xhash_str()
 {
 	int i, ret;
 	char **data = str_data;
-	khash_t(str) *h;
+	xhash_t(str) *h;
 	unsigned k;
 
-	h = kh_init(str);
+	h = xh_init(str);
 	for (i = 0; i < data_size; ++i) {
-		k = kh_put(str, h, data[i], &ret);
-		if (!ret) kh_del(str, h, k);
+		k = xh_put(str, h, data[i], &ret);
+		if (!ret) xh_del(str, h, k);
 	}
-	printf("[ht_khash_int] size: %u\n", kh_size(h));
-	kh_destroy(str, h);
+	printf("[ht_xhash_int] size: %u\n", xh_size(h));
+	xh_destroy(str, h);
 }
 
-void ht_khash_unpack()
+void ht_xhash_unpack()
 {
 	int i, ret;
 	unsigned *data = int_data;
-	khash_t(iun) *h;
+	xhash_t(iun) *h;
 	unsigned k;
 
-	h = kh_init(iun);
+	h = xh_init(iun);
 	for (i = 0; i < data_size; ++i) {
 		int_unpack_t x;
 		x.key = data[i]; x.val = i&0xff;
-		k = kh_put(iun, h, x, &ret);
-		if (!ret) kh_del(iun, h, k);
+		k = xh_put(iun, h, x, &ret);
+		if (!ret) xh_del(iun, h, k);
 	}
-	printf("[ht_khash_unpack] size: %u (sizeof=%ld)\n", kh_size(h), sizeof(int_unpack_t));
-	kh_destroy(iun, h);
+	printf("[ht_xhash_unpack] size: %u (sizeof=%ld)\n", xh_size(h), sizeof(int_unpack_t));
+	xh_destroy(iun, h);
 }
 
-void ht_khash_packed()
+void ht_xhash_packed()
 {
 	int i, ret;
 	unsigned *data = int_data;
-	khash_t(ipk) *h;
+	xhash_t(ipk) *h;
 	unsigned k;
 
-	h = kh_init(ipk);
+	h = xh_init(ipk);
 	for (i = 0; i < data_size; ++i) {
 		int_packed_t x;
 		x.key = data[i]; x.val = i&0xff;
-		k = kh_put(ipk, h, x, &ret);
-		if (!ret) kh_del(ipk, h, k);
+		k = xh_put(ipk, h, x, &ret);
+		if (!ret) xh_del(ipk, h, k);
 	}
-	printf("[ht_khash_packed] size: %u (sizeof=%ld)\n", kh_size(h), sizeof(int_packed_t));
-	kh_destroy(ipk, h);
+	printf("[ht_xhash_packed] size: %u (sizeof=%ld)\n", xh_size(h), sizeof(int_packed_t));
+	xh_destroy(ipk, h);
 }
 
 void ht_timing(void (*f)(void))
@@ -133,10 +133,10 @@ int main(int argc, char *argv[])
 {
 	if (argc > 1) data_size = atoi(argv[1]);
 	ht_init_data();
-	ht_timing(ht_khash_int);
-	ht_timing(ht_khash_str);
-	ht_timing(ht_khash_unpack);
-	ht_timing(ht_khash_packed);
+	ht_timing(ht_xhash_int);
+	ht_timing(ht_xhash_str);
+	ht_timing(ht_xhash_unpack);
+	ht_timing(ht_xhash_packed);
 	ht_destroy_data();
 	return 0;
 }
