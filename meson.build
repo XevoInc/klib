@@ -34,5 +34,4 @@ foreach t : tests
         t.get(0),
         t.get(1),
         include_directories: include)
-    test(t.get(0), exe)
 endforeach
