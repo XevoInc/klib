@@ -9,11 +9,13 @@
  * is using "sprintf()" to convert an integer to a string, which is known to be
  * extremely inefficient.
  */
+#define _POSIX_C_SOURCE 200809L
 #include <stdio.h>
+#include <string.h>
 #include <klib/khash.h>
 KHASH_MAP_INIT_STR(str, int)
 
-inline void int2str(int c, int base, char *ret)
+static inline void int2str(int c, int base, char *ret)
 {
 	const char *tab = "0123456789abcdef";
 	if (c == 0) ret[0] = '0', ret[1] = 0;
