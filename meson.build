@@ -20,18 +20,3 @@ pkg.generate(
     description: 'A generic, type-safe C containers library',
     version: meson.project_version())
 xlib_dep = declare_dependency(include_directories: include)
-
-# Tests.
-tests = [
-    ['xhash', ['test/xhash_test.c']],
-    ['xhash_keith', ['test/xhash_keith.c']],
-    ['xhash_keith2', ['test/xhash_keith2.c']],
-    ['xvec', ['test/xvec_test.cpp']]
-]
-
-foreach t : tests
-    exe = executable(
-        t.get(0),
-        t.get(1),
-        include_directories: include)
-endforeach
