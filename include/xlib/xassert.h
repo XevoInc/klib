@@ -72,40 +72,92 @@ extern "C" {
 #include <stdbool.h>
 
 #define _XFMT(x) _Generic((x), \
-    char:                        "LHS: %c\n" \
-                                 "RHS: %c", \
-    signed char:                 "LHS: %hhd\n" \
-                                 "RHS: %hhd", \
-    unsigned char:               "LHS: %hhu\n" \
-                                 "RHS: %hhu", \
-    signed short:                "LHS: %hd\n" \
-                                 "RHS: %hd", \
-    unsigned short:              "LHS: %hu\n" \
-                                 "RHS: %hu", \
-    signed int:                  "LHS: %d\n" \
-                                 "RHS: %d", \
-    unsigned int:                "LHS: %u\n" \
-                                 "RHS: %u", \
-    long int:                    "LHS: %ld\n" \
-                                 "RHS: %ld", \
-    unsigned long int:           "LHS: %lu\n" \
-                                 "RHS: %lu", \
-    _Atomic long unsigned int:   "RHS: %lu" \
-                                 "LHS: %lu", \
-    long long int:               "LHS: %lld\n" \
-                                 "RHS: %lld", \
-    unsigned long long int:      "LHS: %llu\n" \
-                                 "RHS: %llu", \
-    float:                       "LHS: %f\n" \
-                                 "RHS: %f", \
-    double:                      "LHS: %f\n" \
-                                 "RHS: %f", \
-    long double:                 "LHS: %f\n" \
-                                 "RHS: %f", \
-    char *:                      "LHS: %s\n" \
-                                 "RHS: %s", \
-    void *:                      "LHS: %p\n" \
-                                 "RHS: %p" \
+    char:                                  "LHS: %c\n" \
+                                           "RHS: %c", \
+    _Atomic char:                          "LHS: %c\n" \
+                                           "RHS: %c", \
+    _Atomic char *:                        "LHS: %p\n" \
+                                           "RHS: %p", \
+    signed char:                           "LHS: %hhd\n" \
+                                           "RHS: %hhd", \
+    _Atomic signed char:                   "LHS: %hhd\n" \
+                                           "RHS: %hhd", \
+    _Atomic signed char *:                 "LHS: %p\n" \
+                                           "RHS: %p", \
+    unsigned char:                         "LHS: %hhu\n" \
+                                           "RHS: %hhu", \
+    _Atomic unsigned char:                 "LHS: %hhu\n" \
+                                           "RHS: %hhu", \
+    _Atomic unsigned char *:               "LHS: %p\n" \
+                                           "RHS: %p", \
+    signed short:                          "LHS: %hd\n" \
+                                           "RHS: %hd", \
+    _Atomic signed short:                  "LHS: %hd\n" \
+                                           "RHS: %hd", \
+    _Atomic signed short *:                "LHS: %p\n" \
+                                           "RHS: %p", \
+    unsigned short:                        "LHS: %hu\n" \
+                                           "RHS: %hu", \
+    _Atomic unsigned short:                "LHS: %hu\n" \
+                                           "RHS: %hu", \
+    _Atomic unsigned short *:              "LHS: %p\n" \
+                                           "RHS: %p", \
+    signed int:                            "LHS: %d\n" \
+                                           "RHS: %d", \
+    _Atomic signed int:                    "LHS: %d\n" \
+                                           "RHS: %d", \
+    _Atomic signed int *:                  "LHS: %p\n" \
+                                           "RHS: %p", \
+    unsigned int:                          "LHS: %u\n" \
+                                           "RHS: %u", \
+    _Atomic unsigned int:                  "LHS: %u\n" \
+                                           "RHS: %u", \
+    _Atomic unsigned int *:                "LHS: %p\n" \
+                                           "RHS: %p", \
+    long int:                              "LHS: %ld\n" \
+                                           "RHS: %ld", \
+    _Atomic long int:                      "LHS: %ld\n" \
+                                           "RHS: %ld", \
+    _Atomic long int *:                    "LHS: %p\n" \
+                                           "RHS: %p", \
+    unsigned long int:                     "LHS: %lu\n" \
+                                           "RHS: %lu", \
+    _Atomic unsigned long int:             "LHS: %lu\n" \
+                                           "RHS: %lu", \
+    _Atomic unsigned long int *:           "LHS: %p\n" \
+                                           "RHS: %p", \
+    long long int:                         "LHS: %lld\n" \
+                                           "RHS: %lld", \
+    _Atomic long long int:                 "LHS: %lld\n" \
+                                           "RHS: %lld", \
+    _Atomic long long int *:               "LHS: %p\n" \
+                                           "RHS: %p", \
+    unsigned long long int:                "LHS: %llu\n" \
+                                           "RHS: %llu", \
+    _Atomic unsigned long long int:        "LHS: %llu\n" \
+                                           "RHS *: %llu", \
+    _Atomic unsigned long long int *:      "LHS: %p\n" \
+                                           "RHS: %p", \
+    float:                                 "LHS: %f\n" \
+                                           "RHS: %f", \
+    _Atomic float:                         "LHS: %f\n" \
+                                           "RHS: %f", \
+    _Atomic float *:                       "LHS: %p\n" \
+                                           "RHS: %p", \
+    double:                                "LHS: %f\n" \
+                                           "RHS: %f", \
+    _Atomic double:                        "LHS: %f\n" \
+                                           "RHS: %f", \
+    _Atomic double *:                      "LHS: %p\n" \
+                                           "RHS: %p", \
+    long double:                           "LHS: %f\n" \
+                                           "RHS: %f", \
+    _Atomic long double:                   "LHS: %f\n" \
+                                           "RHS: %f", \
+    _Atomic long double *:                 "LHS: %p\n" \
+                                           "RHS: %p", \
+    void *:                                "LHS: %p\n" \
+                                           "RHS: %p" \
     )
 
 #define _XASSERT_GENERIC(expr, x, y) \
