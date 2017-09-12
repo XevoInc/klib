@@ -90,7 +90,7 @@ extern "C" {
                                  "RHS: %ld", \
     unsigned long int:           "LHS: %lu\n" \
                                  "RHS: %lu", \
-    _Atomic long unsigned int *: "RHS: %lu" \
+    _Atomic long unsigned int:   "RHS: %lu" \
                                  "LHS: %lu", \
     long long int:               "LHS: %lld\n" \
                                  "RHS: %lld", \
