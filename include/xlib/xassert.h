@@ -145,7 +145,7 @@ extern "C" {
 #define XASSERT(expr) \
     _XASSERT_SKELETON(expr, \
         _xassert_log_msg( \
-           _XASSERT_STR_BASE #expr _XASSERT_STR_LOC_DETAILS, \
+           #expr, \
            __FILE__, \
            __LINE__, \
            __func__, \
