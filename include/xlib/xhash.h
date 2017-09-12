@@ -346,6 +346,15 @@ static const double __ac_HASH_UPPER = 0.77;
   @return       The hash value [xhint_t]
  */
 #define xh_int64_hash_func(key) (xhint32_t)((key)>>33^(key)^(key)<<11)
+
+#if UINTPTR_MAX <= UINT_MAX /* 32-bit or less */
+#define xh_ptr_hash_equal(a, b) xh_int_hash_equal((xhint32_t) (a), (xhint32_t) (b))
+#define xh_ptr_hash_func(key) xh_int_hash_func((xhint32_t) (key))
+#else /* 64-bit */
+#define xh_ptr_hash_equal(a, b) xh_int64_hash_equal((xhint64_t) (a), (xhint64_t) (b))
+#define xh_ptr_hash_func(key) xh_int64_hash_func((xhint64_t) (key))
+#endif
+
 /*! @function
   @abstract     64-bit integer comparison function
  */
@@ -681,6 +690,23 @@ static xh_inline xhint_t __ac_Wang_hash(xhint_t key)
  */
 #define XHASH_MAP_INIT_INT64(name, xhval_t)								\
 	XHASH_INIT(name, xhint64_t, xhval_t, 1, xh_int64_hash_func, xh_int64_hash_equal) /* NOLINT */
+
+/*! @function
+  @abstract     Instantiate a hash map containing pointer keys
+  @param  ptr_type A pointer type [type]
+  @param  name  Name of the hash table [symbol]
+ */
+#define XHASH_SET_INIT_PTR(name, ptr_type)								\
+	XHASH_INIT(name, ptr_type, char, 0, xh_ptr_hash_func, xh_ptr_hash_equal)
+
+/*! @function
+  @abstract     Instantiate a hash map containing pointer keys
+  @param  name  Name of the hash table [symbol]
+  @param  ptr_type A pointer type [type]
+  @param  xhval_t  Type of values [type]
+ */
+#define XHASH_MAP_INIT_PTR(name, ptr_type, xhval_t)						\
+	XHASH_INIT(name, ptr_type, xhval_t, 1, xh_ptr_hash_func, xh_ptr_hash_equal) /* NOLINT */
 
 typedef const char *xh_cstr_t;
 /*! @function
