@@ -9,8 +9,19 @@ project('xlib', 'c', 'cpp',
     ],
 )
 
+cflags = [
+    '-Wno-pedantic',
+    '-Wno-unused-but-set-variable',
+    '-Wno-unused-function',
+    '-Wno-unused-parameter',
+    '-Wno-unused-variable',
+    '-Wno-return-type',
+]
+add_project_arguments(cflags, language: 'c')
+add_project_arguments(cflags, language: 'cpp')
+
 # Includes.
-include = include_directories('include')
+include = include_directories('include','.')
 install_subdir('include/xlib', install_dir: 'include')
 
 # pkg-config
@@ -20,3 +31,20 @@ pkg.generate(
     description: 'A generic, type-safe C containers library',
     version: meson.project_version())
 xlib_dep = declare_dependency(include_directories: include)
+
+# unit tests FIXME - compile all C files in test directory
+test_deps = [
+    dependency('valgrind')
+]
+executable(
+    'test_cmd_opt',
+    ['test/test_cmd_opt.cpp'],
+    include_directories: include,
+    dependencies: test_deps
+)
+
+# Convenient targets.
+run_target(
+    'run-test_cmd_opt',
+    command: join_paths(meson.current_build_dir(), 'test_cmd_opt'))
+
