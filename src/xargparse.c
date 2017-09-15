@@ -6,10 +6,12 @@
  *
  */
 
-#include <xargparse.h>
+#include <string.h>
 
-extern const char *argp_program_version  = XARG_PROGRAM_VERSION;
-extern const char *argp_program_bug_address  = XARG_MAIL_ADDRESS;
+#include <xlib/xargparse.h>
+
+const char *argp_program_version  = XARG_PROGRAM_VERSION;
+const char *argp_program_bug_address  = XARG_MAIL_ADDRESS;
 
 static char program_doc[] = "generic xargparse program";
 static char args_default_docs[] = "ARG1...";
@@ -38,10 +40,7 @@ static argp_l0pt_ctx argp_context;
 static error_t argp_l0pt_cb(int key, char *arg, struct argp_state *state);
 
 /* Program descriptor for argp_longopt*/
-static struct argp argp_l0pt_desc = {argp_l0pt_options,
-                                     argp_l0pt_cb,
-                                     program_doc,args_default_docs};
-
+static struct argp argp_l0pt_desc;
 
 /* Callback for argp_longopt */
 static error_t
@@ -61,7 +60,7 @@ argp_l0pt_cb (int key, char *arg, struct argp_state *state)
       break;
 
     case ARGP_KEY_ARG:
-      if (state->arg_num >= ctx->maxpos_args) {
+      if (state->arg_num >= ctx->max_pos_args) {
           argp_usage (state);
       }
 
@@ -96,20 +95,32 @@ argp_l0pt_init(argp_l0pt_ctx *ctx)
     /* Allocate room for a single positional argument by default*/
 }
 
-errno_t xargparse_init(xargparse* self, xargparse*_entries,uint flags)
+/* API implementation */
+errno_t xargparse_init(xargparse* self, xargparse_entry* entries,uint flags)
 {
     // Create argp_longopt table
-    // initialize argp
-    argp_l0pt_init();
+    memset(&argp_l0pt_desc,0,sizeof(argp_l0pt_desc));
+    argp_l0pt_desc.options  = argp_l0pt_options;
+    argp_l0pt_desc.parser   = argp_l0pt_cb;
+    argp_l0pt_desc.doc = program_doc;
+    argp_l0pt_desc.args_doc = args_default_docs;
+    argp_l0pt_desc.children = nullptr;
+
+    argp_l0pt_init(&argp_context);
+
+    return 0;
 }
 
-errno_t xargparse_parse(xargparse* self,int argc, const char **argv)
+errno_t xargparse_parse(xargparse* self,int argc, char **argv)
 {
-    argp_parse(&argp_l0pt_desc,argc,argv,0,0,&argp_context);
+    errno_t rc;
+    rc = argp_parse(&argp_l0pt_desc,argc,argv,0,0,&argp_context);
+    return rc;
 }
 
 errno_t xargparse_destroy(xargparse* self)
 {
     // Free argp table
+    return 0;
 }
 

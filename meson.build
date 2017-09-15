@@ -10,6 +10,7 @@ project('xlib', 'c', 'cpp',
 )
 
 cflags = [
+    '-Wno-pedantic',
     '-Wno-unused-function',
     '-Wno-unused-parameter',
 ]
@@ -40,12 +41,16 @@ pkg.generate(
 xlib_dep = declare_dependency(include_directories: include)
 
 # unit tests FIXME - compile all C files in test directory
+xlib_dep = dependency('xlib', fallback: ['xlib', 'xlib_dep'])
+
 test_deps = [
+    xlib_dep,
     dependency('valgrind')
 ]
 executable(
-    'test_cmd_opt',
-    ['test/test_cmd_opt.c'],
+    'test_argparse',
+    ['test/test_argparse.c'],
+    link_with: lib,
     include_directories: include,
     dependencies: test_deps
 )
