@@ -10,12 +10,8 @@ project('xlib', 'c', 'cpp',
 )
 
 cflags = [
-    '-Wno-pedantic',
-    '-Wno-unused-but-set-variable',
     '-Wno-unused-function',
     '-Wno-unused-parameter',
-    '-Wno-unused-variable',
-    '-Wno-return-type',
 ]
 add_project_arguments(cflags, language: 'c')
 add_project_arguments(cflags, language: 'cpp')
@@ -23,6 +19,17 @@ add_project_arguments(cflags, language: 'cpp')
 # Includes.
 include = include_directories('include','.')
 install_subdir('include/xlib', install_dir: 'include')
+
+src = [
+    'src/xargparse.c'
+]
+
+lib = static_library(
+    'xlib',
+    src,
+    include_directories: include,
+    install: true,
+    version: meson.project_version())
 
 # pkg-config
 pkg = import('pkgconfig')
@@ -38,7 +45,7 @@ test_deps = [
 ]
 executable(
     'test_cmd_opt',
-    ['test/test_cmd_opt.cpp'],
+    ['test/test_cmd_opt.c'],
     include_directories: include,
     dependencies: test_deps
 )
