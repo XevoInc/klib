@@ -41,10 +41,8 @@ pkg.generate(
 xlib_dep = declare_dependency(include_directories: include)
 
 # unit tests FIXME - compile all C files in test directory
-xlib_dep = dependency('xlib', fallback: ['xlib', 'xlib_dep'])
 
 test_deps = [
-    xlib_dep,
     dependency('valgrind')
 ]
 executable(
