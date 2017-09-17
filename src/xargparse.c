@@ -6,7 +6,9 @@
  *
  */
 
-#include <string.h>
+// Use extended XOpen functions
+#define __USE_XOPEN_EXTENDED
+#define __USE_XOPEN2K8
 
 #include <xlib/xargparse.h>
 
@@ -26,6 +28,7 @@ static struct argp_option *argp_l0pt_options;
 /* Used to communicate with parsing callback from longopt*/
 typedef struct _argp_l0pt_ctx
 {
+    /* reference back to xargparse and extended entries table */
     /* Positional arguments */
     uint    max_pos_args, min_pos_args;
     uint    npos_args;
@@ -95,6 +98,13 @@ argp_l0pt_init(argp_l0pt_ctx *ctx)
     /* Allocate room for a single positional argument by default*/
 }
 
+char* mystrdup(const char* s)
+{
+    char* p = malloc(strlen(s)+1);
+    if (p) strcpy(p, s);
+    return p;
+}
+
 /* API implementation */
 errno_t xargparse_init(xargparse* self, xargparse_entry* entries,uint flags)
 {
@@ -115,12 +125,24 @@ errno_t xargparse_parse(xargparse* self,int argc, char **argv)
 {
     errno_t rc;
     rc = argp_parse(&argp_l0pt_desc,argc,argv,0,0,&argp_context);
+    if (rc == 0) {
+        self->npos_args = argp_context.npos_args;
+        for (uint i = 0; i < self->npos_args; i++ ) {
+            self->pos_args[i] = mystrdup(argp_context.pos_args[i]);
+        }
+    }
     return rc;
 }
 
 errno_t xargparse_destroy(xargparse* self)
 {
     // Free argp table
+    for (uint i = 0; i < self->npos_args; i++ ) {
+        free(self->pos_args[i]);
+        self->pos_args[i] = nullptr;
+    }
+    self->npos_args = 0;
+
     return 0;
 }
 

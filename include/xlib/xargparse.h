@@ -5,6 +5,7 @@
  * @copyright Copyright (C) 2017 Xevo Inc. All Rights Reserved.
  *
  */
+
 #pragma once
 
 #ifndef XARGPARSE_H_
@@ -14,11 +15,13 @@
 extern "C" {
 #endif
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <errno.h>
 #include <argp.h>
+#include <string.h>
 
 #include <xlib/xtypes.h>
 
@@ -95,6 +98,8 @@ typedef struct _xargparse
     const xargparse_entry*  arguments;
     xargparse_flags         flags;
     // Internal
+    uint                    npos_args;
+    char*                   pos_args[XARG_MAX_POS_ARGS];
     int                     argc;
     const char**            argv;
 } xargparse;

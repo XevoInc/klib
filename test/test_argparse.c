@@ -27,13 +27,19 @@ int main(int argc, char *argv[])
     xargparse xa;
 
     xargparse_init(&xa,xe,0);
-    argc = xargparse_parse(&xa,argc,argv);
-
+    xargparse_parse(&xa,argc,argv);
 
     printf("Command line flags: \n"
-           "\titest=%d \n",itest
+           "\titest=%d \n"
+           "\npos_args=%d \n",
+           itest,xa.npos_args
            );
+    printf("\nPositional arguments:\n");
+    for (uint i = 0; i < xa.npos_args; i++) {
+        printf("Arg[%2d]=%s\n",i+1,xa.pos_args[i]);
+    }
 
+    xargparse_destroy(&xa);
     exit(0);
 }
 
