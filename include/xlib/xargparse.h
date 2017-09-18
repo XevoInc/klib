@@ -22,9 +22,9 @@ extern "C" {
 #include <errno.h>
 #include <argp.h>
 #include <string.h>
+#include <strings.h>
 
 #include <xlib/xtypes.h>
-
 
 #ifndef XARG_PROGRAM_VERSION
 #define XARG_PROGRAM_VERSION "generic-xargparse-client 0.1"
@@ -34,12 +34,24 @@ extern "C" {
 #define XARG_MAIL_ADDRESS "<dev@xlib.org>"
 #endif
 
-
-/* Maximum length of the argument string - 1 */
-#define XARG_SIZE_T     255
+/* Maximum length of the argument string - 1 and a single argument*/
+#define XARG_SIZE_MAX     1023
+#define XARG_OPTSIZE_MAX  255
 
 /* Maximum number of positional arguments */
 #define XARG_MAX_POS_ARGS 15
+
+/* Error codes */
+#define EOK                 0
+
+/* Macros static */
+#define ZERO_CONTEXT(p)  (memset(p,0,sizeof(*p)))
+
+/* Define if not standard */
+#ifndef min
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+#endif
 
 extern const char *argp_program_version; //  = XARG_PROGRAM_VERSION;
 extern const char *argp_program_bug_address; //  = XARG_MAIL_ADDRESS;
@@ -65,7 +77,7 @@ typedef int xargparse_cb(struct _xargparse *self,
 
 /**
  * xargparse entry format
- *
+ *strcmpi
  * type - _END indicates the last entry
  * short name (key).
  * long name
@@ -80,10 +92,16 @@ typedef struct _xargparse_entry
     const char      key;
     const char*     long_name;
     void*           field;
-    void*           default_val;
+    uint            field_size;
+    char*           format;
+    uint            format_len;
+    uint            flags;
+    #ifdef NOT_IMPLEMENTED
+    /* caller provided validation callbacks */
     xargparse_cb*   callback;
     void*           context;
-    uint            flags;
+    #endif //NOT_IMPLEMENTED
+
 } xargparse_entry;
 
 typedef enum _xargparse_flags
@@ -94,24 +112,28 @@ typedef enum _xargparse_flags
 /* Parsing context */
 typedef struct _xargparse
 {
-    // Provided by the caller
+    /* Provided by the caller */
     const xargparse_entry*  arguments;
     xargparse_flags         flags;
-    // Internal
-    uint                    npos_args;
-    char*                   pos_args[XARG_MAX_POS_ARGS];
+    int                     ent_count;
+    /* Internal */
     int                     argc;
     const char**            argv;
+    /* Positional arguments */
+    uint    max_pos_args, min_pos_args;
+    uint    npos_args;
+    char*   pos_args[XARG_MAX_POS_ARGS];
+    /* Standard fields */
+    bool    verbose, silent;
 } xargparse;
 
-
-/* Entry definitions macros */
-#define DEFINE_END()       {XARGPARSE_TYPE_END, '\0', nullptr, nullptr, nullptr, nullptr, nullptr,0}
-#define DEFINE_BOOL(...)   {XARGPARSE_TYPE_BOOL,__VA_ARGS__ }
-#define DEFINE_UINT(...)   {XARGPARSE_TYPE_UINT,__VA_ARGS__ }
-#define DEFINE_INT(...)    {XARGPARSE_TYPE_INT,__VA_ARGS__ }
-#define DEFINE_STRING(...) {XARGPARSE_TYPE_STRING,__VA_ARGS__ }
-#define DEFINE_DOUBLE(...) {XARGPARSE_TYPE_DOUBLE,__VA_ARGS__ }
+/* Entry definitions macros  */
+#define DEFINE_END()              {XARGPARSE_TYPE_END, '\0', nullptr, nullptr,0, nullptr,0,0}
+#define DEFINE_BOOL(k,nm,f,fl)    {XARGPARSE_TYPE_BOOL,k,nm,&f,sizeof(bool),"%1d",4,fl}
+#define DEFINE_UINT(k,nm,f,fl)    {XARGPARSE_TYPE_UINT,k,nm,&f,sizeof(uint),"%4d",4,fl}
+#define DEFINE_INT(k,nm,f,fl)     {XARGPARSE_TYPE_INT,k,nm,&f,sizeof(uint),"%4d",4,fl}
+#define DEFINE_DOUBLE(k,nm,f,fl)  {XARGPARSE_TYPE_DOUBLE,k,nm,&f,sizeof(double),"%8.8f",6,fl}
+#define DEFINE_STRING(k,nm,f,sz,fl) {XARGPARSE_TYPE_STRING,k,nm,f,sz,"%s",2, fl}
 
 /* API */
 errno_t xargparse_init(xargparse* self, xargparse_entry* entries ,uint flags);
