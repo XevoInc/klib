@@ -1,6 +1,37 @@
 /**
  * @file      xargparse.h
  * @brief     Command line argument parser a la Python
+ *
+ *            Semantics is modeled after Python argparse, except
+ *            command line options are described declaratively,
+ *            not by the set of function calls.
+ *
+ *            To describe options declare an array of
+ *            structures, using following macros: #define
+
+ *            DEFINE_BOOL(k,nm,f,fl) : boolean option
+ *            key (char),long name, backing variable, flags
+ *
+ *            DEFINE_UINT(k,nm,f,fl) : unsigned integer key
+ *            (char),long name, backing variable, flags
+ *
+ *            DEFINE_INT(k,nm,f,fl)  : integer
+ *            key (char),long name, backing variable, flags
+ *
+ *            DEFINE_DOUBLE(k,nm,f,fl): floating point double
+ *            key (char),long name, backing variable, flags
+ *
+ *            DEFINE_STRING(k,nm,f,sz,fl):null terminated string
+ *            key,long name, backing variable,sizeof of it,flags
+ *
+ *            DEFINE_END() : terminator, final line
+ *
+ *            Command line should conform to GNU syntax rules
+ *            with either short or long names for options.
+ *
+ *            Positional arguments, up to the MAX value are
+ *            placed into an array of strings upton return
+ *
  * @author    Vlad Sadovsky <vsadovsky at xevo.com>
  * @copyright Copyright (C) 2017 Xevo Inc. All Rights Reserved.
  *
@@ -96,11 +127,6 @@ typedef struct _xargparse_entry
     char*           format;
     uint            format_len;
     uint            flags;
-    #ifdef NOT_IMPLEMENTED
-    /* caller provided validation callbacks */
-    xargparse_cb*   callback;
-    void*           context;
-    #endif //NOT_IMPLEMENTED
 
 } xargparse_entry;
 
