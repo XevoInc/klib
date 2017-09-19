@@ -36,38 +36,30 @@
  * @copyright Copyright (C) 2017 Xevo Inc. All Rights Reserved.
  *
  */
-
 #ifndef XARGPARSE_H_
 #define XARGPARSE_H_
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-// TODO: move to C as much as possible
 #include <argp.h>
-#include <errno.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
 
-#ifndef XARG_PROGRAM_VERSION
-#define XARG_PROGRAM_VERSION "generic-xargparse-client 0.1"
+#ifndef XARG_DEF_PROGRAM_VERSION
+#define XARG_DEF_PROGRAM_VERSION "generic-xargparse-client 0.1"
 #endif
 
-#ifndef XARG_MAIL_ADDRESS
-#define XARG_MAIL_ADDRESS "<dev@xlib.org>"
+#ifndef XARG_DEF_MAIL_ADDRESS
+#define XARG_DEF_MAIL_ADDRESS "<foo@bar.org>"
 #endif
+
+// Max number of positional arguments to specify
+#define XARG_MAX_POS_ARGS 25
 
 /* Maximum number of positional arguments */
-// TODO: let user specify
-#define XARG_MAX_POS_ARGS 15
-
-extern const char *argp_program_version; //  = XARG_PROGRAM_VERSION;
-extern const char *argp_program_bug_address; //  = XARG_MAIL_ADDRESS;
+extern const char *argp_program_version;
+extern const char *argp_program_bug_address;
 
 /* Externally visible definitions */
 
@@ -98,43 +90,35 @@ typedef int xargparse_cb(struct _xargparse *self,
  * callback - called when matching entry is parsed
  * context - context for the callback
  */
-// TODO: const char *p or const char* p but not a mix
 typedef struct xargparse_entry
 {
-    xargparse_type  type;
-    const char      key;
-    const char*     long_name;
-    void*           field;
-    unsigned int    field_size;
-    char*           format;
-    unsigned int    format_len;
-    unsigned int    flags;
+    xargparse_type type;
+    const char key;
+    const char *long_name;
+    void *field;
+    unsigned int field_size;
+    char *format;
+    unsigned int format_len;
+    unsigned int flags;
 } xargparse_entry;
 
-/* TODO: Could add negation or more general concept of flags with bitmasks */
-
 // TODO: Perhaps it would be cleaner to hide the struct and have the public fields passed into the function rather than passing the whole struct. Then the caller can't mess up rather than being advised not to touch certain fields. Alternatively, could split into a public and a private struct and commit only to the private struct.
-// TODO: can use const char * pointing into argv for large arguments, not
-// mallocing, etc.
 
 /* Parsing context */
 typedef struct xargparse
 {
     /* Provided by the caller */
-    const xargparse_entry* arguments;
-    unsigned int           ent_count;
+    const xargparse_entry *arguments;
+    unsigned int ent_count;
     /* Internal */
-    int                    argc;
-    const char**           argv;
     /* Positional arguments */
-    unsigned int           max_pos_args, min_pos_args;
-    unsigned int           npos_args;
-    char*                  pos_args[XARG_MAX_POS_ARGS];
+    unsigned int max_pos_args, min_pos_args;
+    unsigned int npos_args;
+    char *pos_args[XARG_MAX_POS_ARGS];
     /* Standard fields */
-    bool                   verbose;
+    bool verbose;
 } xargparse;
 
-// TODO: consistent spacing everywhere
 
 /* Entry definitions macros  */
 #define DEFINE_END()              {XARGPARSE_TYPE_END, '\0', NULL, NULL,0, NULL,0,0}
@@ -147,9 +131,11 @@ typedef struct xargparse
 typedef int xargparse_err;
 
 /* API */
-xargparse_err xargparse_init(xargparse* self, xargparse_entry* entries);
-xargparse_err xargparse_parse(xargparse* self,int argc, char **argv);
-xargparse_err xargparse_destroy(xargparse* self);
+xargparse_err xargparse_init(xargparse *self, xargparse_entry *entries,
+                             const char *prg_version, const char *bug_addr,
+                             const char *prg_doc, const char *args_doc);
+xargparse_err xargparse_parse(xargparse *self, int argc, char **argv);
+xargparse_err xargparse_destroy(xargparse *self);
 
 #ifdef __cplusplus
 }

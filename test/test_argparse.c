@@ -1,14 +1,23 @@
+#include <ctype.h>
+#include <errno.h>
 #include <fcntl.h>
+#include <stdarg.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
-#include <assert.h>
+#include <string.h>
+#include <strings.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 
+#include <xlib/xassert.h>
 #include <xlib/xargparse.h>
 
 typedef unsigned int uint;
+
+static const char version[]="test_argparse v1.0";
+static const char bug_addr[]="xdev@xlib.org";
+static const char prg_doc[] = "Test program for xlib argparse";
+static const char args_doc[] = "ARG1 ...";
 
 int main(int argc, char *argv[])
 {
@@ -32,7 +41,7 @@ int main(int argc, char *argv[])
 
     printf("\n>>Test for extended argument parsing \n\n");
 
-    xargparse_init(&xa, xe);
+    xargparse_init(&xa, xe,version,bug_addr,prg_doc,args_doc);
     xargparse_parse(&xa, argc, argv);
 
     printf("Command line flags: \n"
