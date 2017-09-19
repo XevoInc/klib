@@ -37,6 +37,7 @@ pkg = import('pkgconfig')
 pkg.generate(
     name: 'xlib',
     description: 'A generic, type-safe C containers library',
+    libraries: [lib],
     version: meson.project_version())
 xlib_dep = declare_dependency(include_directories: include)
 

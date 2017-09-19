@@ -83,7 +83,8 @@ parse_xargument(xargparse* self,int key,char *arg)
     /* Treat bool special */
     if (ent_cur->type == XARGPARSE_TYPE_BOOL) {
         if (arg == nullptr) {
-            // XASSERT - argp given us null pointer as an argument, should not ever happen
+            /* FIXME If boolean type is not given a value - interpet negation prefix*/
+
             return EINVAL;
         }
         if (!strcasecmp(arg, "false")  || !strcmp(arg,"0")) {
