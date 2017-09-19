@@ -10,11 +10,24 @@
  *
  */
 
-// Use extended XOpen functions
-#define __USE_XOPEN_EXTENDED    1
-#define _USE_XOPEN              1
 #include <xlib/xargparse.h>
 
+/* Error codes */
+#define EOK                 0
+
+/* Macros static */
+#define ZERO_MEM(p)  (memset(p, 0, sizeof(*p)))
+
+/* Define if not standard */
+// TODO: static inline for max
+#ifndef min
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+#endif
+
+typedef unsigned int uint;
+
+// TODO: make caller specify
 const char *argp_program_version  = XARG_PROGRAM_VERSION;
 const char *argp_program_bug_address  = XARG_MAIL_ADDRESS;
 
@@ -26,7 +39,7 @@ static char args_default_docs[] = "ARG1...";
 *  long-name, key, descriptive-name,flags,doc-string,group
 *  End is marked with NULL long-name
 */
-static struct argp_option *argp_l0pt_options = nullptr;
+static struct argp_option *argp_l0pt_options = NULL;
 
 /* Use xargparse as a context to communicate with parsing callback from longopt*/
 typedef xargparse argp_l0pt_ctx;
@@ -37,34 +50,6 @@ static error_t argp_l0pt_cb(int key, char *arg, struct argp_state *state);
 
 /* Program descriptor for argp_longopt*/
 static struct argp argp_l0pt_desc;
-
-/* Define static version of strdup */
-static inline
-char* mystrdup(const char* s)
-{
-    char* p = malloc(strlen(s)+1);
-    if (p) strcpy(p, s);
-    return p;
-}
-
-static const char *
-prefix_skip(const char *str, const char *prefix)
-{
-    size_t len = strlen(prefix);
-    return strncmp(str, prefix, len) ? nullptr : (char *)(str + len);
-}
-
-static int
-prefix_cmp(const char *str, const char *prefix)
-{
-    for (;; str++, prefix++)
-        if (!*prefix) {
-            return 0;
-        } else if (*str != *prefix) {
-            return (unsigned char)*prefix - (unsigned char)*str;
-        }
-}
-
 
 /* extended (described by the caller) argument parsing */
 static error_t
@@ -82,28 +67,26 @@ parse_xargument(xargparse* self,int key,char *arg)
 
     /* Treat bool special */
     if (ent_cur->type == XARGPARSE_TYPE_BOOL) {
-        if (arg == nullptr) {
-            /* FIXME If boolean type is not given a value - interpet negation prefix*/
-
+        if (arg == NULL) {
             return EINVAL;
         }
         if (!strcasecmp(arg, "false")  || !strcmp(arg,"0")) {
-            *(bool *)ent_cur->field = false;
+            *((bool *) ent_cur->field) = false;
             return EOK;
         } else if(!strcasecmp(arg, "true") || !strcmp(arg,"1")) {
-            *(bool *)ent_cur->field = true;
+            *((bool *) ent_cur->field) = true;
             return EOK;
         }
     }
 
-    if (ent_cur->format == nullptr) {
+    if (ent_cur->format == NULL) {
         if (ent_cur->field_size > 1) {
             uint    len_to_copy = max(strlen(arg),(ent_cur->field_size / sizeof(char) - 1));
             strncpy(ent_cur->field,arg,len_to_copy);
         }
     } else {
         /* Format string given */
-        if (arg != nullptr) {
+        if (arg != NULL) {
             sscanf(arg, ent_cur->format, ent_cur->field);
         } else {
             // XASSERT - argp given us null pointer as an argument, should not ever happen
@@ -126,7 +109,7 @@ argp_l0pt_cb (int key, char *arg, struct argp_state *state)
   switch (key)
     {
     case 'q':
-        ctx->silent = true;
+        ctx->verbose = false;
         break;
     case 'v':
         ctx->verbose = true;
@@ -149,9 +132,8 @@ argp_l0pt_cb (int key, char *arg, struct argp_state *state)
         }
 
         // Received next positional argument
-        // FIXME CR : is it safe to not do strdump, simply store pointer for the later use ?
         ctx->npos_args += 1;
-        ctx->pos_args[state->arg_num] = mystrdup(arg);
+        ctx->pos_args[state->arg_num] = arg;
 
       break;
 
@@ -174,8 +156,6 @@ static void
 argp_l0pt_init(argp_l0pt_ctx *ctx)
 {
     ctx->verbose = false;
-    ctx->silent = false;
-    /* Need to implement setting by the caller FIXME*/
     ctx->min_pos_args = 0;
     ctx->max_pos_args = sizeof(ctx->pos_args) / sizeof(ctx->pos_args[0]);
     ctx->npos_args = 0;
@@ -184,16 +164,16 @@ argp_l0pt_init(argp_l0pt_ctx *ctx)
 
 
 /* API implementation */
-errno_t xargparse_init(xargparse* self, xargparse_entry* entries,uint flags)
+xargparse_err xargparse_init(xargparse* self, xargparse_entry* entries)
 {
     const xargparse_entry *ent_cur;
 
     // Initialize xargparse context
-    ZERO_CONTEXT(self);
+    // TODO: consider not doing this; it's highly debatable
+    ZERO_MEM(self);
     self->arguments = entries;
-    self->flags = flags;
     self->argc = 0;
-    self->argv = nullptr;
+    self->argv = NULL;
 
     /* Preserve counter of entries passed from the caller*/
     self->ent_count = 0;
@@ -203,12 +183,12 @@ errno_t xargparse_init(xargparse* self, xargparse_entry* entries,uint flags)
         self->ent_count += 1;
     }
 
-    memset(&argp_l0pt_desc,0,sizeof(argp_l0pt_desc));
-    argp_l0pt_desc.options  = nullptr;
+    ZERO_MEM(&argp_l0pt_desc);
+    argp_l0pt_desc.options  = NULL;
     argp_l0pt_desc.parser   = argp_l0pt_cb;
     argp_l0pt_desc.doc = program_doc;
     argp_l0pt_desc.args_doc = args_default_docs;
-    argp_l0pt_desc.children = nullptr;
+    argp_l0pt_desc.children = NULL;
 
     /* use xargp descriptor as a callback context */
     argp_context = (argp_l0pt_ctx*)self;
@@ -218,29 +198,33 @@ errno_t xargparse_init(xargparse* self, xargparse_entry* entries,uint flags)
     return 0;
 }
 
-errno_t xargparse_parse(xargparse* self,int argc, char **argv)
+xargparse_err xargparse_parse(xargparse* self,int argc, char **argv)
 {
-    errno_t                 rc;
+    xargparse_err           rc;
     struct argp_option*     cur_option;
     const xargparse_entry*  cur_entry;
 
+    // TODO: if this is read-only data, should be in init. if it gets clobbered
+    // for each parse run, should be right here.
+
     /* Create and initialize argp_argp longoptions table */
     if (self->ent_count > 0) {
-        argp_l0pt_options = (struct argp_option *)calloc(self->ent_count+1,sizeof(struct argp_option));
-        if (argp_l0pt_options == nullptr) {
+        argp_l0pt_options = malloc(
+            (self->ent_count+1) * sizeof(*argp_l0pt_options));
+        if (argp_l0pt_options == NULL) {
             return ENOMEM;
         }
 
         /* Replicate our entries */
         cur_option = argp_l0pt_options;
         cur_entry = self->arguments;
-        for (int i = 0; i < self->ent_count; i++, cur_option++,cur_entry++) {
+        for (size_t i = 0; i < self->ent_count; i++, cur_option++,cur_entry++) {
             cur_option->key = cur_entry->key;
             cur_option->name = cur_entry->long_name;
             cur_option->arg = cur_entry->long_name;
             /* Do we need OPTION_ flags beyond OPTION_ARG_OPTIONAL */
             cur_option->flags = cur_entry->flags;
-            cur_option->doc = nullptr;
+            cur_option->doc = NULL;
             cur_option->group = 0;
         }
         /* Final entry must be terminating one (key = 0)*/
@@ -252,25 +236,21 @@ errno_t xargparse_parse(xargparse* self,int argc, char **argv)
     rc = argp_parse(&argp_l0pt_desc,argc,argv,0,0,argp_context);
 
     /* Free up options table*/
-    if (argp_l0pt_options != nullptr) {
+    if (argp_l0pt_options != NULL) {
         free(argp_l0pt_options);
-        argp_l0pt_options = nullptr;
+        argp_l0pt_options = NULL;
     }
 
     return rc;
 }
 
-errno_t xargparse_destroy(xargparse* self)
+xargparse_err xargparse_destroy(xargparse* self)
 {
     // Free argp table
     for (uint i = 0; i < self->npos_args; i++ ) {
-        free(self->pos_args[i]);
-        self->pos_args[i] = nullptr;
+        self->pos_args[i] = NULL;
     }
     self->npos_args = 0;
 
     return 0;
 }
-
-
-

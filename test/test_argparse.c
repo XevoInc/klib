@@ -8,6 +8,8 @@
 
 #include <xlib/xargparse.h>
 
+typedef unsigned int uint;
+
 int main(int argc, char *argv[])
 {
     int     itest = 0;
@@ -30,8 +32,8 @@ int main(int argc, char *argv[])
 
     printf("\n>>Test for extended argument parsing \n\n");
 
-    xargparse_init(&xa,xe,0);
-    xargparse_parse(&xa,argc,argv);
+    xargparse_init(&xa, xe);
+    xargparse_parse(&xa, argc, argv);
 
     printf("Command line flags: \n"
            "\titest=%d\n\tbtest=%d\n\tuitest=%d\n\tstest=%s\n",

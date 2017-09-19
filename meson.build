@@ -9,23 +9,17 @@ project('xlib', 'c', 'cpp',
     ],
 )
 
-cflags = [
-    '-Wno-pedantic',
-    '-Wno-unused-function',
-    '-Wno-unused-parameter',
-]
-add_project_arguments(cflags, language: 'c')
-add_project_arguments(cflags, language: 'cpp')
+add_project_arguments([], language: 'c')
 
 # Includes.
-include = include_directories('include','.')
+include = include_directories('include')
 install_subdir('include/xlib', install_dir: 'include')
 
 src = [
     'src/xargparse.c'
 ]
 
-lib = static_library(
+lib = library(
     'xlib',
     src,
     include_directories: include,
@@ -43,15 +37,11 @@ xlib_dep = declare_dependency(include_directories: include)
 
 # unit tests FIXME - compile all C files in test directory
 
-test_deps = [
-    dependency('valgrind')
-]
 executable(
     'test_argparse',
     ['test/test_argparse.c'],
     link_with: lib,
-    include_directories: include,
-    dependencies: test_deps
+    include_directories: include
 )
 
 # Convenient targets.
