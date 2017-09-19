@@ -12,8 +12,8 @@
  *
  */
 
-#ifndef XASSERT_H_
-#define XASSERT_H_
+#ifndef XLIB_XASSERT_H_
+#define XLIB_XASSERT_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -261,4 +261,4 @@ void _xassert_log_msg( \
 }
 #endif
 
-#endif /* XASSERT_H_ */
+#endif /* XLIB_XASSERT_H_ */

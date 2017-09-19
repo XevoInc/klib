@@ -63,8 +63,8 @@ int main() {
 
 */
 
-#ifndef AC_XVEC_H
-#define AC_XVEC_H
+#ifndef XLIB_XVEC_H_
+#define XLIB_XVEC_H_
 
 #include <stdlib.h>
 
@@ -107,4 +107,4 @@ int main() {
 						  : (v).n <= (size_t)(i)? (v).n = (i) + 1 \
 						  : 0), (v).a[(i)])
 
-#endif
+#endif /* XLIB_XVEC_H_ */
