@@ -45,8 +45,8 @@ int main() {
 }
 */
 
-#ifndef __AC_XHASH_H
-#define __AC_XHASH_H
+#ifndef XLIB_XHASH_H_
+#define XLIB_XHASH_H_
 
 /*!
   @header
@@ -706,4 +706,4 @@ typedef const char *xh_cstr_t;
 #define XHASH_MAP_INIT_STR(name, xhval_t)								\
 	XHASH_INIT(name, xh_cstr_t, xhval_t, 1, xh_str_hash_func, xh_str_hash_equal)
 
-#endif /* __AC_XHASH_H */
+#endif /* XLIB_XHASH_H_ */
