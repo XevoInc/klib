@@ -1,0 +1,18 @@
+MUST DO :
+- make xargparse struct opaque, init returns handle, method functions to retrive pos args
+- xargparse : unit tests -> meson test
+- xargparse : harden sscanf
+- xargparse : handle parsing errors
+
+IMPORTANT:
+- negator for named bit values (--no-<setting>)
+- chain to library using argparse
+- stop using l0pt (-->lopt)
+- dynamically allocate lopt descriptor
+- consistent style with hound et al
+
+NICE TO DO:
+- custom validator callback
+- better way to manage default values
+
+

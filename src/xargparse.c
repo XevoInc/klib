@@ -36,9 +36,10 @@
 
 typedef unsigned int uint;
 
-
+/* argp globals per http://www.gnu.org/software/libc/manual/html_node/Argp-Global-Variables.html#Argp-Global-Variables */
 const char *argp_program_version = NULL;
 const char *argp_program_bug_address = NULL;
+error_t argp_err_exit_status = 0;
 
 static const char program_default_doc[] = "generic xargparse program";
 static const char args_default_docs[] = "ARG1...";
@@ -232,6 +233,7 @@ xargparse_err xargparse_init(xargparse *self, xargparse_entry *entries,
 xargparse_err xargparse_parse(xargparse *self, int argc, char **argv)
 {
     xargparse_err rc;
+    unsigned argp_flags;
     struct argp_option *cur_option;
     const xargparse_entry *cur_entry;
 
@@ -260,8 +262,9 @@ xargparse_err xargparse_parse(xargparse *self, int argc, char **argv)
     }
     /* Link options descriptor to the options table*/
     argp_l0pt_desc.options = argp_l0pt_options;
+    argp_flags = ARGP_NO_EXIT /* |  ARGP_SILENT | ARGP_IN_ORDER  | ARGP_NO_ERRS */  ;
 
-    rc = argp_parse(&argp_l0pt_desc, argc, argv, 0, 0, argp_context);
+    rc = argp_parse(&argp_l0pt_desc, argc, argv, argp_flags, 0, argp_context);
 
     /* Free up options table*/
     if (argp_l0pt_options != NULL) {

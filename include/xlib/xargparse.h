@@ -1,6 +1,8 @@
 /**
  * @file      xargparse.h
- * @brief     Command line argument parser a la Python
+ * @brief     Command line argument parser a la Python. Parses
+ *            GNU style arguments as described in
+ *            http://www.gnu.org/software/libc/manual/html_node/Argp.html#Argp
  *
  *            Semantics is modeled after Python argparse, except
  *            command line options are described declaratively,
@@ -74,11 +76,11 @@ typedef enum _xargparse_type
 } xargparse_type;
 
 /* Validation callback per field */
-struct _xargparse;
-struct _xargparse_entry;
+struct xargparse;
+struct xargparse_entry;
 
-typedef int xargparse_cb(struct _xargparse *self,
-                         const struct _xargparse_entry *entry);
+typedef int xargparse_cb(struct xargparse *self,
+                         const struct xargparse_entry *entry);
 
 /**
  * xargparse entry format
@@ -101,8 +103,6 @@ typedef struct xargparse_entry
     unsigned int format_len;
     unsigned int flags;
 } xargparse_entry;
-
-// TODO: Perhaps it would be cleaner to hide the struct and have the public fields passed into the function rather than passing the whole struct. Then the caller can't mess up rather than being advised not to touch certain fields. Alternatively, could split into a public and a private struct and commit only to the private struct.
 
 /* Parsing context */
 typedef struct xargparse
