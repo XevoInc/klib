@@ -74,11 +74,23 @@ extern "C" {
 #define _XFMT(x) _Generic((x), \
     char:                                  "LHS: %c\n" \
                                            "RHS: %c\n", \
+    const char:                            "LHS: %c\n" \
+                                           "RHS: %c\n", \
+    char *:                                "LHS: %c\n" \
+                                           "RHS: %c\n", \
+    const char *:                          "LHS: %c\n" \
+                                           "RHS: %c\n", \
     _Atomic char:                          "LHS: %c\n" \
                                            "RHS: %c\n", \
     _Atomic char *:                        "LHS: %p\n" \
                                            "RHS: %p\n", \
     signed char:                           "LHS: %hhd\n" \
+                                           "RHS: %hhd\n", \
+    const signed char:                     "LHS: %hhd\n" \
+                                           "RHS: %hhd\n", \
+    signed char *:                         "LHS: %hhd\n" \
+                                           "RHS: %hhd\n", \
+    const signed char *:                   "LHS: %hhd\n" \
                                            "RHS: %hhd\n", \
     _Atomic signed char:                   "LHS: %hhd\n" \
                                            "RHS: %hhd\n", \
@@ -86,11 +98,23 @@ extern "C" {
                                            "RHS: %p\n", \
     unsigned char:                         "LHS: %hhu\n" \
                                            "RHS: %hhu\n", \
+    const unsigned char:                   "LHS: %hhu\n" \
+                                           "RHS: %hhu\n", \
+    unsigned char *:                       "LHS: %hhu\n" \
+                                           "RHS: %hhu\n", \
+    const unsigned char *:                 "LHS: %hhu\n" \
+                                           "RHS: %hhu\n", \
     _Atomic unsigned char:                 "LHS: %hhu\n" \
                                            "RHS: %hhu\n", \
     _Atomic unsigned char *:               "LHS: %p\n" \
                                            "RHS: %p\n", \
     signed short:                          "LHS: %hd\n" \
+                                           "RHS: %hd\n", \
+    const signed short:                    "LHS: %hd\n" \
+                                           "RHS: %hd\n", \
+    signed short *:                        "LHS: %hd\n" \
+                                           "RHS: %hd\n", \
+    const signed short *:                  "LHS: %hd\n" \
                                            "RHS: %hd\n", \
     _Atomic signed short:                  "LHS: %hd\n" \
                                            "RHS: %hd\n", \
@@ -98,11 +122,23 @@ extern "C" {
                                            "RHS: %p\n", \
     unsigned short:                        "LHS: %hu\n" \
                                            "RHS: %hu\n", \
+    const unsigned short:                  "LHS: %hu\n" \
+                                           "RHS: %hu\n", \
+    unsigned short *:                      "LHS: %hu\n" \
+                                           "RHS: %hu\n", \
+    const unsigned short *:                "LHS: %hu\n" \
+                                           "RHS: %hu\n", \
     _Atomic unsigned short:                "LHS: %hu\n" \
                                            "RHS: %hu\n", \
     _Atomic unsigned short *:              "LHS: %p\n" \
                                            "RHS: %p\n", \
     signed int:                            "LHS: %d\n" \
+                                           "RHS: %d\n", \
+    const signed int:                      "LHS: %d\n" \
+                                           "RHS: %d\n", \
+    signed int *:                          "LHS: %d\n" \
+                                           "RHS: %d\n", \
+    const signed int *:                    "LHS: %d\n" \
                                            "RHS: %d\n", \
     _Atomic signed int:                    "LHS: %d\n" \
                                            "RHS: %d\n", \
@@ -110,11 +146,23 @@ extern "C" {
                                            "RHS: %p\n", \
     unsigned int:                          "LHS: %u\n" \
                                            "RHS: %u\n", \
+    const unsigned int:                    "LHS: %u\n" \
+                                           "RHS: %u\n", \
+    unsigned int *:                        "LHS: %u\n" \
+                                           "RHS: %u\n", \
+    const unsigned int *:                  "LHS: %u\n" \
+                                           "RHS: %u\n", \
     _Atomic unsigned int:                  "LHS: %u\n" \
                                            "RHS: %u\n", \
     _Atomic unsigned int *:                "LHS: %p\n" \
                                            "RHS: %p\n", \
     long int:                              "LHS: %ld\n" \
+                                           "RHS: %ld\n", \
+    const long int:                        "LHS: %ld\n" \
+                                           "RHS: %ld\n", \
+    long int *:                            "LHS: %ld\n" \
+                                           "RHS: %ld\n", \
+    const long int *:                      "LHS: %ld\n" \
                                            "RHS: %ld\n", \
     _Atomic long int:                      "LHS: %ld\n" \
                                            "RHS: %ld\n", \
@@ -122,11 +170,23 @@ extern "C" {
                                            "RHS: %p\n", \
     unsigned long int:                     "LHS: %lu\n" \
                                            "RHS: %lu\n", \
+    const unsigned long int:               "LHS: %lu\n" \
+                                           "RHS: %lu\n", \
+    unsigned long int *:                   "LHS: %lu\n" \
+                                           "RHS: %lu\n", \
+    const unsigned long int *:             "LHS: %lu\n" \
+                                           "RHS: %lu\n", \
     _Atomic unsigned long int:             "LHS: %lu\n" \
                                            "RHS: %lu\n", \
     _Atomic unsigned long int *:           "LHS: %p\n" \
                                            "RHS: %p\n", \
     long long int:                         "LHS: %lld\n" \
+                                           "RHS: %lld\n", \
+    const long long int:                   "LHS: %lld\n" \
+                                           "RHS: %lld\n", \
+    long long int *:                       "LHS: %lld\n" \
+                                           "RHS: %lld\n", \
+    const long long int *:                 "LHS: %lld\n" \
                                            "RHS: %lld\n", \
     _Atomic long long int:                 "LHS: %lld\n" \
                                            "RHS: %lld\n", \
@@ -134,11 +194,23 @@ extern "C" {
                                            "RHS: %p\n", \
     unsigned long long int:                "LHS: %llu\n" \
                                            "RHS: %llu\n", \
+    const unsigned long long int:          "LHS: %llu\n" \
+                                           "RHS: %llu\n", \
+    unsigned long long int *:              "LHS: %llu\n" \
+                                           "RHS: %llu\n", \
+    const unsigned long long int *:        "LHS: %llu\n" \
+                                           "RHS: %llu\n", \
     _Atomic unsigned long long int:        "LHS: %llu\n" \
-                                           "RHS *: %llu\n", \
+                                           "RHS: %llu\n", \
     _Atomic unsigned long long int *:      "LHS: %p\n" \
                                            "RHS: %p\n", \
     float:                                 "LHS: %f\n" \
+                                           "RHS: %f\n", \
+    const float:                           "LHS: %f\n" \
+                                           "RHS: %f\n", \
+    float *:                               "LHS: %f\n" \
+                                           "RHS: %f\n", \
+    const float *:                         "LHS: %f\n" \
                                            "RHS: %f\n", \
     _Atomic float:                         "LHS: %f\n" \
                                            "RHS: %f\n", \
@@ -146,11 +218,23 @@ extern "C" {
                                            "RHS: %p\n", \
     double:                                "LHS: %f\n" \
                                            "RHS: %f\n", \
+    const double:                          "LHS: %f\n" \
+                                           "RHS: %f\n", \
+    double *:                              "LHS: %f\n" \
+                                           "RHS: %f\n", \
+    const double *:                        "LHS: %f\n" \
+                                           "RHS: %f\n", \
     _Atomic double:                        "LHS: %f\n" \
                                            "RHS: %f\n", \
     _Atomic double *:                      "LHS: %p\n" \
                                            "RHS: %p\n", \
     long double:                           "LHS: %f\n" \
+                                           "RHS: %f\n", \
+    const long double:                     "LHS: %f\n" \
+                                           "RHS: %f\n", \
+    long double *:                         "LHS: %f\n" \
+                                           "RHS: %f\n", \
+    const long double *:                   "LHS: %f\n" \
                                            "RHS: %f\n", \
     _Atomic long double:                   "LHS: %f\n" \
                                            "RHS: %f\n", \
