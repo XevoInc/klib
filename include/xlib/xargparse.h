@@ -46,6 +46,9 @@ extern "C"
 {
 #endif
 
+#include <errno.h>
+#include <stdarg.h>
+#include <stdbool.h>
 #include <argp.h>
 
 #ifndef XARG_DEF_PROGRAM_VERSION
