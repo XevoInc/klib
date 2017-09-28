@@ -33,7 +33,7 @@ pkg.generate(
     description: 'A generic, type-safe C containers library',
     libraries: [lib],
     version: meson.project_version())
-xlib_dep = declare_dependency(include_directories: include)
+xlib_dep = declare_dependency(link_with: lib, include_directories: include)
 
 # unit tests FIXME - compile all C files in test directory
 
