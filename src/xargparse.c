@@ -31,7 +31,7 @@
 
 /* Macros static */
 #define ZERO_MEM(p)  (memset(p, 0, sizeof(*p)))
-#define SAFE_FREE(p) if (p) { free(p); p=NULL;}
+#define SAFE_FREE(p) do { if (p) { free((void *)p); p=NULL;} } while (0)
 #define NUM_ELEMS(a) (sizeof(a) / sizeof(a[0]))
 
 typedef unsigned int uint;
