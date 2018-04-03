@@ -274,7 +274,7 @@ extern "C" {
 #define XASSERT_NULL(x) XASSERT_EQ(%p, x, NULL)
 #define XASSERT_NOT_NULL(x) XASSERT_NEQ(%p, x, NULL)
 
-#define XASSERT_ERROR XASSERT_TRUE(0)
+#define XASSERT_ERROR XASSERT(0)
 
 #endif /* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) */
 
