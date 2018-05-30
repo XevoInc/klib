@@ -36,9 +36,17 @@ extern "C" {
     _XASSERT_MAX_ARG_STR_LEN \
     )
 
+#ifdef __GNUC__
+#define _XASSERT_LIKELY(x) __builtin_expect(!!(x), 1)
+#define _XASSERT_UNLIKELY(x) __builtin_expect(!!(x), 0)
+#else
+#define _XASSERT_LIKELY(x) (x)
+#define _XASSERT_UNLIKELY(x) (x)
+#endif
+
 #define _XASSERT_SKELETON(expr, log_code) \
     do { \
-      if (expr) { \
+      if (_XASSERT_LIKELY(expr)) { \
         /* Empty, but catches accidental assignment (i.e. a=b) in expr. */ \
       } \
       else { \
