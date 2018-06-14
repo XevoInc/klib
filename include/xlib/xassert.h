@@ -265,8 +265,8 @@ extern "C" {
 #define XASSERT_GT(x, y) _XASSERT_OP_GENERIC(>, x, y)
 #define XASSERT_GTE(x, y) _XASSERT_OP_GENERIC(>=, x, y)
 
-#define XASSERT_NULL(x) XASSERT_EQ((void *) (x), NULL)
-#define XASSERT_NOT_NULL(x) XASSERT_NEQ((void *) (x), NULL)
+#define XASSERT_NULL(x) XASSERT((x) == NULL)
+#define XASSERT_NOT_NULL(x) XASSERT((x) != NULL)
 
 #define XASSERT_ERROR XASSERT(false)
 
