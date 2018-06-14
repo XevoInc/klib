@@ -268,8 +268,6 @@ extern "C" {
 #define XASSERT_NULL(x) XASSERT((x) == NULL)
 #define XASSERT_NOT_NULL(x) XASSERT((x) != NULL)
 
-#define XASSERT_ERROR XASSERT(false)
-
 #else
 
 #define XASSERT_LT(fmt, x, y) XASSERT_LT_FMT(fmt, x, y)
@@ -282,9 +280,9 @@ extern "C" {
 #define XASSERT_NULL(x) XASSERT_EQ(%p, x, NULL)
 #define XASSERT_NOT_NULL(x) XASSERT_NEQ(%p, x, NULL)
 
-#define XASSERT_ERROR XASSERT(0)
-
 #endif /* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) */
+
+#define XASSERT_ERROR XASSERT(0)
 
 #define XASSERT(expr) \
     _XASSERT_SKELETON(expr, \
