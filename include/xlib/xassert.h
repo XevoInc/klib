@@ -52,6 +52,7 @@ extern "C" {
         else { \
             log_code; \
             abort(); \
+            __builtin_unreachable(); \
         } \
     } while (0);
 
@@ -282,7 +283,11 @@ extern "C" {
 
 #endif /* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) */
 
-#define XASSERT_ERROR XASSERT(0)
+#define XASSERT_ERROR \
+    do { \
+    XASSERT(0); \
+    __builtin_unreachable(); \
+    } while (0);
 
 #define XASSERT(expr) \
     _XASSERT_SKELETON(expr, \
