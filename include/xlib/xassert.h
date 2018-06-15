@@ -19,6 +19,8 @@
 extern "C" {
 #endif
 
+#include <float.h>
+#include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -284,6 +286,10 @@ extern "C" {
 #define XASSERT_NOT_NULL(x) XASSERT_NEQ(%p, x, NULL)
 
 #endif /* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) */
+
+#define XASSERT_FLTEQ(x, y) _XASSERT_FMT(fabsf(x - y) < DBL_EPSILON, "%f", x, y)
+#define XASSERT_DBLEQ(x, y) _XASSERT_FMT(fabs(x - y) < DBL_EPSILON, "%f", x, y)
+#define XASSERT_LDBLEQ(x, y) _XASSERT_FMT(fabsl(x - y) < DBL_EPSILON, "%f", x, y)
 
 #define XASSERT_STREQ(s, t) _XASSERT_FMT(strcmp(s, t) == 0, "%s", s, t)
 
