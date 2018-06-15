@@ -22,6 +22,7 @@ extern "C" {
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define _XASSERT_STR_BASE "Assert: failed expression ("
 #define _XASSERT_STR_LOC_DETAILS ") at %s:%d [%s]"
@@ -283,6 +284,8 @@ extern "C" {
 #define XASSERT_NOT_NULL(x) XASSERT_NEQ(%p, x, NULL)
 
 #endif /* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) */
+
+#define XASSERT_STREQ(s, t) _XASSERT_FMT(strcmp(s, t) == 0, "%s", s, t)
 
 #define XASSERT_ERROR \
     do { \
