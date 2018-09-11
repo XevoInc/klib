@@ -234,16 +234,18 @@ xargparse_err xargparse_parse(xargparse *self, int argc, char **argv)
 {
     xargparse_err rc;
     unsigned argp_flags;
+    unsigned int argp_opt_size;
     struct argp_option *cur_option;
     const xargparse_entry *cur_entry;
 
     /* Create and initialize argp_argp longoptions table */
     if (self->ent_count > 0) {
-        argp_l0pt_options = malloc(
-            (self->ent_count + 1) * sizeof(*argp_l0pt_options));
+        argp_opt_size = (self->ent_count + 1) * sizeof(*argp_l0pt_options);
+        argp_l0pt_options = malloc(argp_opt_size);
         if (argp_l0pt_options == NULL) {
             return ENOMEM;
         }
+        memset(argp_l0pt_options,0,argp_opt_size);
 
         /* Replicate our entries */
         cur_option = argp_l0pt_options;
@@ -257,8 +259,9 @@ xargparse_err xargparse_parse(xargparse *self, int argc, char **argv)
             cur_option->doc = NULL;
             cur_option->group = 0;
         }
-        /* Final entry must be terminating one (key = 0)*/
-        cur_option->key = '\0';
+        /* Final entry must be terminating one (key = 0, name='')*/
+        cur_option->key = 0;
+        cur_option->name = NULL;
     }
     /* Link options descriptor to the options table*/
     argp_l0pt_desc.options = argp_l0pt_options;
