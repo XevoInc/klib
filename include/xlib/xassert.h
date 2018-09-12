@@ -287,9 +287,16 @@ extern "C" {
 
 #endif /* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) */
 
-#define XASSERT_FLTEQ(x, y) _XASSERT_FMT(fabsf((x) - (y)) < DBL_EPSILON, "%f", x, y)
-#define XASSERT_DBLEQ(x, y) _XASSERT_FMT(fabs((x) - (y)) < DBL_EPSILON, "%f", x, y)
-#define XASSERT_LDBLEQ(x, y) _XASSERT_FMT(fabsl((x) - (y)) < DBL_EPSILON, "%f", x, y)
+#define XASSERT_FLTEQ_THRESH(x, y, thresh) \
+    _XASSERT_FMT(fabsf((x) - (y)) < (thresh), "%f", x, y)
+#define XASSERT_DBLEQ_THRESH(x, y, thresh) \
+    _XASSERT_FMT(fabs((x) - (y)) < (thresh), "%f", x, y)
+#define XASSERT_LDBLEQ_THRESH(x, y, thresh) \
+    _XASSERT_FMT(fabsl((x) - (y)) < (thresh), "%f", x, y)
+
+#define XASSERT_FLTEQ(x, y) XASSERT_FLTEQ_THRESH(x, y, DBL_EPSILON)
+#define XASSERT_DBLEQ(x, y) XASSERT_DBLEQ_THRESH(x, y, DBL_EPSILON)
+#define XASSERT_LDBLEQ(x, y) XASSERT_LDBLEQ_THRESH(x, y, DBL_EPSILON)
 
 #define XASSERT_STREQ(s, t) _XASSERT_FMT(strcmp(s, t) == 0, "%s", s, t)
 
