@@ -12,5 +12,7 @@ the components deriving from klib.
 
 ## Components
 
-* [khash.h][include/xlib/xhash.h]: generic hash table based on double hashing.
-* kvec.h: generic dynamic array.
+* xargparse: generic command-line argument parsing.
+* xassert: generic macro-based assertions.
+* xhash: generic hash table based on double hashing.
+* xvec: generic dynamic array.
