@@ -64,12 +64,6 @@ static error_t argp_l0pt_cb(int key, char *arg, struct argp_state *state);
 /* Program descriptor for argp_longopt*/
 static struct argp argp_l0pt_desc;
 
-static inline uint
-max(uint a, uint b)
-{
-    return ((a) > (b)) ? (a) : (b);
-}
-
 /* extended (described by the caller) argument parsing */
 static error_t
 parse_xargument(xargparse *self, int key, char *arg)
@@ -100,8 +94,7 @@ parse_xargument(xargparse *self, int key, char *arg)
 
     if (ent_cur->format == NULL) {
         if (ent_cur->field_size > 1) {
-            uint len_to_copy = max(strlen(arg), (ent_cur->field_size / sizeof(char) - 1));
-            strncpy(ent_cur->field, arg, len_to_copy);
+            strncpy(ent_cur->field, arg, ent_cur->field_size - 1);
         }
     } else {
         /* Format string given */
