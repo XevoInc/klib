@@ -315,6 +315,8 @@ extern "C" {
            __func__, \
            ""));
 
+#define XASSERT_FALSE(expr) XASSERT(!(expr))
+
 #define XASSERT_DEFINE_ASSERTS(log_func) \
 \
 static const char s_loc_str[] = _XASSERT_STR_LOC_DETAILS "\n"; \
