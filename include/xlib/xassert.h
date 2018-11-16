@@ -15,6 +15,11 @@
 #ifndef XLIB_XASSERT_H_
 #define XLIB_XASSERT_H_
 
+#if defined(__cplusplus) && (__cplusplus >= 201103L)
+/* Needed for std::nullptr_t. */
+#include <cstddef>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -270,9 +275,6 @@ extern "C" {
 #define XASSERT_GT(x, y) _XASSERT_OP_GENERIC(>, x, y)
 #define XASSERT_GTE(x, y) _XASSERT_OP_GENERIC(>=, x, y)
 
-#define XASSERT_NULL(x) XASSERT((x) == NULL)
-#define XASSERT_NOT_NULL(x) XASSERT((x) != NULL)
-
 #else
 
 #define XASSERT_LT(fmt, x, y) XASSERT_LT_FMT(fmt, x, y)
@@ -282,10 +284,16 @@ extern "C" {
 #define XASSERT_GT(fmt, x, y) XASSERT_GT_FMT(fmt, x, y)
 #define XASSERT_GTE(fmt, x, y) XASSERT_GTE_FMT(fmt, x, y)
 
-#define XASSERT_NULL(x) XASSERT_EQ(%p, x, NULL)
-#define XASSERT_NOT_NULL(x) XASSERT_NEQ(%p, x, NULL)
-
 #endif /* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) */
+
+#if defined(__cplusplus) && (__cplusplus >= 201103L)
+#define _XASSERT_NULL_SYMBOL nullptr
+#else
+#define _XASSERT_NULL_SYMBOL NULL
+#endif
+
+#define XASSERT_NULL(x) XASSERT((x) == _XASSERT_NULL_SYMBOL)
+#define XASSERT_NOT_NULL(x) XASSERT((x) != _XASSERT_NULL_SYMBOL)
 
 #define XASSERT_FLTEQ_THRESH(x, y, thresh) \
     _XASSERT_FMT(fabsf((x) - (y)) < (thresh), "%f", x, y)
