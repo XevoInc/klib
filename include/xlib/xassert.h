@@ -70,7 +70,7 @@ extern "C" {
             "LHS: " fmt "\nRHS: " fmt "\n", \
             __VA_ARGS__));
 
-#define _XASSERT_OP_FMT(op, fmt, x, y) _XASSERT_FMT(x op y, fmt, x, y)
+#define _XASSERT_OP_FMT(op, fmt, x, y) _XASSERT_FMT((x) op (y), fmt, x, y)
 
 #define XASSERT_LT_FMT(fmt, x, y) _XASSERT_OP_FMT(<, fmt, x, y)
 #define XASSERT_LTE_FMT(fmt, x, y) _XASSERT_OP_FMT(<=, fmt, x, y)
@@ -261,7 +261,7 @@ extern "C" {
     _XASSERT_SKELETON(expr, \
         _xassert_log_msg(#expr, __FILE__, __LINE__, __func__, _XFMT(x), x, y));
 
-#define _XASSERT_OP_GENERIC(op, x, y) _XASSERT_GENERIC(x op y, x, y)
+#define _XASSERT_OP_GENERIC(op, x, y) _XASSERT_GENERIC((x) op (y), x, y)
 
 #define XASSERT_LT(x, y) _XASSERT_OP_GENERIC(<, x, y)
 #define XASSERT_LTE(x, y) _XASSERT_OP_GENERIC(<=, x, y)
