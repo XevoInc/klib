@@ -317,30 +317,42 @@ extern "C" {
 
 #define XASSERT_FALSE(expr) XASSERT(!(expr))
 
-#define XASSERT_DEFINE_ASSERTS(log_func) \
-\
-static const char s_loc_str[] = _XASSERT_STR_LOC_DETAILS "\n"; \
-\
-static inline __attribute__ ((__unused__)) \
-void _xassert_log_msg( \
-    const char *expr, \
-    const char *file, \
-    int line, \
-    const char *func, \
-    const char *fmt, \
-    ...) \
-{ \
-    va_list args; \
-    char msg[_XASSERT_MAX_FORMAT_STR_LEN]; \
-    char *pos; \
-    \
+static inline
+void xlib_default_log_func(const char *msg)
+{
+    fputs(msg, stderr);
+}
+
+typedef void (*XlibLogFunc)(const char *msg);
+static XlibLogFunc s_xlib_log_func = xlib_default_log_func;
+
+static inline
+void xlib_set_log_func(XlibLogFunc func)
+{
+    s_xlib_log_func = func;
+}
+
+static const char s_loc_str[] = _XASSERT_STR_LOC_DETAILS "\n";
+static inline __attribute__ ((__unused__))
+void _xassert_log_msg(
+    const char *expr,
+    const char *file,
+    int line,
+    const char *func,
+    const char *fmt,
+    ...)
+{
+    va_list args;
+    char msg[_XASSERT_MAX_FORMAT_STR_LEN];
+    char *pos;
+
     /*
      * We check only the sprintfs for strings that are unknown at compile-time
      * because they have the potential to be variable length.
-     */ \
-    pos = msg; \
-    pos += sprintf(pos, _XASSERT_STR_BASE); \
-    \
+     */
+    pos = msg;
+    pos += sprintf(pos, _XASSERT_STR_BASE);
+
     /*
      * Override the -Wformat-security warning here regarding untrusted input
      * because expr comes from a limited set of compile-time assert macros,
@@ -350,22 +362,22 @@ void _xassert_log_msg( \
      * directive inside a #define:
      *
      * https://gcc.gnu.org/onlinedocs/cpp/Pragmas.html
-     */ \
-    _Pragma("GCC diagnostic push") \
-    _Pragma("GCC diagnostic ignored \"-Wformat-security\"") \
-    pos += snprintf(pos, _XASSERT_MAX_EXPR_STR_LEN, expr); \
-    _Pragma("GCC diagnostic pop") \
-    \
-    pos += sprintf(pos, s_loc_str, file, line, func); \
-    \
-    va_start(args, fmt); \
-    _Pragma("GCC diagnostic push") \
-    _Pragma("GCC diagnostic ignored \"-Wformat-security\"") \
-    vsnprintf(pos, _XASSERT_MAX_ARG_STR_LEN, fmt, args); \
-    _Pragma("GCC diagnostic pop") \
-    va_end(args); \
-    \
-    log_func(msg); \
+     */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-security"
+    pos += snprintf(pos, _XASSERT_MAX_EXPR_STR_LEN, expr);
+#pragma GCC diagnostic pop
+
+    pos += sprintf(pos, s_loc_str, file, line, func);
+
+    va_start(args, fmt);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-security"
+    vsnprintf(pos, _XASSERT_MAX_ARG_STR_LEN, fmt, args);
+#pragma GCC diagnostic pop
+    va_end(args);
+
+    s_xlib_log_func(msg);
 }
 
 #define _XASSERT_ERRCODE(x, y, strerror_func) \
