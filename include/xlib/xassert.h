@@ -15,19 +15,55 @@
 #ifndef XLIB_XASSERT_H_
 #define XLIB_XASSERT_H_
 
-#if defined(__cplusplus) && (__cplusplus >= 201103L)
-/* Needed for std::nullptr_t. */
-#include <cstddef>
-#endif
+#include <stdio.h>
+
+static inline
+void xlib_default_log_func(const char *msg)
+{
+    fputs(msg, stderr);
+}
+
+typedef void (*XlibLogFunc)(const char *msg);
 
 #ifdef __cplusplus
+/* The log function needs C linkage so it can be shared between C and C++. */
 extern "C" {
 #endif
+static XlibLogFunc s_xlib_log_func = xlib_default_log_func;
+#ifdef __cplusplus
+}
+#endif
+
+static inline
+void xlib_set_log_func(XlibLogFunc func)
+{
+    s_xlib_log_func = func;
+}
+
+#ifdef __cplusplus
+#include <sstream>
+template <class X, class Y>
+static inline __attribute__ ((__unused__))
+void _xassert_log_msg_cpp(
+    const X &x,
+    const Y &y,
+    const char *expr,
+    const char *file,
+    int line,
+    const char *func)
+{
+    std::stringstream ss;
+
+    ss << "Assert: Failed expression (" << expr << ") at "
+       << file << ":" << line << " [" << func << "]\n"
+       << "LHS: " << x << "\nRHS: " << y << "\n";
+    s_xlib_log_func(ss.str().c_str());
+}
+#endif /* __cplusplus */
 
 #include <float.h>
 #include <math.h>
 #include <stdarg.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -279,9 +315,34 @@ extern "C" {
 #define XASSERT_GT(x, y) _XASSERT_OP_GENERIC(>, x, y)
 #define XASSERT_GTE(x, y) _XASSERT_OP_GENERIC(>=, x, y)
 
+#else
+
+#ifdef __cplusplus
+/* For C++, we implement these using a template function. */
+#define _XASSERT_CXX(expr, x, y) _XASSERT_SKELETON(expr, \
+    _xassert_log_msg_cpp(\
+        x, \
+        y, \
+        #expr, \
+        __FILE__, \
+        __LINE__, \
+        __func__))
+
+#define _XASSERT_OP_CXX(op, x, y) _XASSERT_CXX((x) op (y), x, y)
+
+#define XASSERT_LT(x, y) _XASSERT_OP_CXX(<, x, y)
+#define XASSERT_LTE(x, y) _XASSERT_OP_CXX(<=, x, y)
+#define XASSERT_EQ(x, y) _XASSERT_OP_CXX(==, x, y)
+#define XASSERT_NEQ(x, y) _XASSERT_OP_CXX(!=, x, y)
+#define XASSERT_GT(x, y) _XASSERT_OP_CXX(>, x, y)
+#define XASSERT_GTE(x, y) _XASSERT_OP_CXX(>=, x, y)
+#endif /* __cplusplus */
+
 #endif /* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) */
 
 #if defined(__cplusplus) && (__cplusplus >= 201103L)
+/* Needed for std::nullptr_t. */
+#include <cstddef>
 #define _XASSERT_NULL_SYMBOL nullptr
 #else
 #define _XASSERT_NULL_SYMBOL NULL
@@ -319,21 +380,6 @@ extern "C" {
            ""));
 
 #define XASSERT_FALSE(expr) XASSERT(!(expr))
-
-static inline
-void xlib_default_log_func(const char *msg)
-{
-    fputs(msg, stderr);
-}
-
-typedef void (*XlibLogFunc)(const char *msg);
-static XlibLogFunc s_xlib_log_func = xlib_default_log_func;
-
-static inline
-void xlib_set_log_func(XlibLogFunc func)
-{
-    s_xlib_log_func = func;
-}
 
 static const char s_loc_str[] = _XASSERT_STR_LOC_DETAILS "\n";
 static inline __attribute__ ((__unused__))
@@ -385,9 +431,5 @@ void _xassert_log_msg(
 
 #define _XASSERT_ERRCODE(x, y, strerror_func) \
     _XASSERT_FMT(x == y, "%d (%s)", x, strerror_func(x), y, strerror_func(y))
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* XLIB_XASSERT_H_ */
