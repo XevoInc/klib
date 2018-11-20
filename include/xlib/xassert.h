@@ -42,9 +42,35 @@ void xlib_set_log_func(XlibLogFunc func)
 
 #ifdef __cplusplus
 #include <sstream>
+
+static inline
+void _xassert_build_base_msg(
+    std::stringstream &ss,
+    const char *expr,
+    const char *file,
+    int line,
+    const char *func)
+{
+    ss << "Assert: Failed expression (" << expr << ") at "
+       << file << ":" << line << " [" << func << "]\n";
+}
+
+static inline
+void _xassert_log_msg_cpp(
+    const char *expr,
+    const char *file,
+    int line,
+    const char *func)
+{
+    std::stringstream ss;
+
+    _xassert_build_base_msg(ss, expr, file, line, func);
+    s_xlib_log_func(ss.str().c_str());
+}
+
 template <class X, class Y>
 static inline __attribute__ ((__unused__))
-void _xassert_log_msg_cpp(
+void _xassert_log_formatted_msg_cpp(
     const X &x,
     const Y &y,
     const char *expr,
@@ -54,9 +80,8 @@ void _xassert_log_msg_cpp(
 {
     std::stringstream ss;
 
-    ss << "Assert: Failed expression (" << expr << ") at "
-       << file << ":" << line << " [" << func << "]\n"
-       << "LHS: " << x << "\nRHS: " << y << "\n";
+    _xassert_build_base_msg(ss, expr, file, line, func);
+    ss << "LHS: " << x << "\nRHS: " << y << "\n";
     s_xlib_log_func(ss.str().c_str());
 }
 #endif /* __cplusplus */
@@ -315,12 +340,20 @@ void _xassert_log_msg_cpp(
 #define XASSERT_GT(x, y) _XASSERT_OP_GENERIC(>, x, y)
 #define XASSERT_GTE(x, y) _XASSERT_OP_GENERIC(>=, x, y)
 
-#else
+#endif /* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) */
 
 #ifdef __cplusplus
 /* For C++, we implement these using a template function. */
+#define XASSERT(expr) \
+    _XASSERT_SKELETON(expr, \
+        _xassert_log_msg_cpp( \
+           #expr, \
+           __FILE__, \
+           __LINE__, \
+           __func__));
+
 #define _XASSERT_CXX(expr, x, y) _XASSERT_SKELETON(expr, \
-    _xassert_log_msg_cpp(\
+    _xassert_log_formatted_msg_cpp(\
         x, \
         y, \
         #expr, \
@@ -336,9 +369,19 @@ void _xassert_log_msg_cpp(
 #define XASSERT_NEQ(x, y) _XASSERT_OP_CXX(!=, x, y)
 #define XASSERT_GT(x, y) _XASSERT_OP_CXX(>, x, y)
 #define XASSERT_GTE(x, y) _XASSERT_OP_CXX(>=, x, y)
-#endif /* __cplusplus */
 
-#endif /* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) */
+#else /* C, not C++ */
+
+#define XASSERT(expr) \
+    _XASSERT_SKELETON(expr, \
+        _xassert_log_msg( \
+           #expr, \
+           __FILE__, \
+           __LINE__, \
+           __func__, \
+           ""));
+
+#endif /* __cplusplus */
 
 #if defined(__cplusplus) && (__cplusplus >= 201103L)
 /* Needed for std::nullptr_t. */
@@ -350,6 +393,14 @@ void _xassert_log_msg_cpp(
 
 #define XASSERT_NULL(x) XASSERT((x) == _XASSERT_NULL_SYMBOL)
 #define XASSERT_NOT_NULL(x) XASSERT((x) != _XASSERT_NULL_SYMBOL)
+
+#define XASSERT_FALSE(expr) XASSERT(!(expr))
+
+#define XASSERT_ERROR \
+    do { \
+    XASSERT(0); \
+    __builtin_unreachable(); \
+    } while (0);
 
 #define XASSERT_FLTEQ_THRESH(x, y, thresh) \
     _XASSERT_FMT(fabsf((x) - (y)) < (thresh), "%f", x, y)
@@ -364,23 +415,7 @@ void _xassert_log_msg_cpp(
 
 #define XASSERT_STREQ(s, t) _XASSERT_FMT(strcmp(s, t) == 0, "%s", s, t)
 
-#define XASSERT_ERROR \
-    do { \
-    XASSERT(0); \
-    __builtin_unreachable(); \
-    } while (0);
-
-#define XASSERT(expr) \
-    _XASSERT_SKELETON(expr, \
-        _xassert_log_msg( \
-           #expr, \
-           __FILE__, \
-           __LINE__, \
-           __func__, \
-           ""));
-
-#define XASSERT_FALSE(expr) XASSERT(!(expr))
-
+#ifndef __cplusplus
 static const char s_loc_str[] = _XASSERT_STR_LOC_DETAILS "\n";
 static inline __attribute__ ((__unused__))
 void _xassert_log_msg(
@@ -428,6 +463,7 @@ void _xassert_log_msg(
 
     s_xlib_log_func(msg);
 }
+#endif
 
 #define _XASSERT_ERRCODE(x, y, strerror_func) \
     _XASSERT_FMT(x == y, "%d (%s)", x, strerror_func(x), y, strerror_func(y))
