@@ -84,6 +84,10 @@ extern "C" {
 #define XASSERT_GT_FMT(fmt, x, y) _XASSERT_OP_FMT(>, fmt, x, y)
 #define XASSERT_GTE_FMT(fmt, x, y) _XASSERT_OP_FMT(>=, fmt, x, y)
 
+/*
+ * Here, we define XASSERT_* style macros if we have C11 Generic Macros.
+ * Otherwise, users have to use either XASSERT or XASSERT_EQ_FMT style.
+ */
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
 
 #include <stdatomic.h>
@@ -274,15 +278,6 @@ extern "C" {
 #define XASSERT_NEQ(x, y) _XASSERT_OP_GENERIC(!=, x, y)
 #define XASSERT_GT(x, y) _XASSERT_OP_GENERIC(>, x, y)
 #define XASSERT_GTE(x, y) _XASSERT_OP_GENERIC(>=, x, y)
-
-#else
-
-#define XASSERT_LT(fmt, x, y) XASSERT_LT_FMT(fmt, x, y)
-#define XASSERT_LTE(fmt, x, y) XASSERT_LTE_FMT(fmt, x, y)
-#define XASSERT_EQ(fmt, x, y) XASSERT_EQ_FMT(fmt, x, y)
-#define XASSERT_NEQ(fmt, x, y) XASSERT_NEQ_FMT(fmt, x, y)
-#define XASSERT_GT(fmt, x, y) XASSERT_GT_FMT(fmt, x, y)
-#define XASSERT_GTE(fmt, x, y) XASSERT_GTE_FMT(fmt, x, y)
 
 #endif /* defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) */
 
