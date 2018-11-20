@@ -90,7 +90,7 @@ void _xassert_log_msg_cpp(
 
 #define _XASSERT_SKELETON(expr, log_code) \
     do { \
-        int _res = (expr); \
+        int _res = expr; \
         if (_XASSERT_LIKELY(_res)) { \
             /* Empty, but catches accidental assignment (i.e. a=b) in expr. */ \
         } \
