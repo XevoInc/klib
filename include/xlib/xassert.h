@@ -126,6 +126,12 @@ void _xassert_log_formatted_msg_cpp(
         } \
     } while (0);
 
+#ifndef __cplusplus
+/*
+ * C++ doesn't get XASSERT_FMT, which relies on _xassert_log_msg, which is
+ * defined only for C. This is because C++ can use templates, which do a better
+ * job than XASSERT_FMT anyway.
+ */
 #define _XASSERT_FMT(expr, fmt, ...) \
     _XASSERT_SKELETON(expr, \
         _xassert_log_msg( \
@@ -144,6 +150,7 @@ void _xassert_log_formatted_msg_cpp(
 #define XASSERT_NEQ_FMT(fmt, x, y) _XASSERT_OP_FMT(!=, fmt, x, y)
 #define XASSERT_GT_FMT(fmt, x, y) _XASSERT_OP_FMT(>, fmt, x, y)
 #define XASSERT_GTE_FMT(fmt, x, y) _XASSERT_OP_FMT(>=, fmt, x, y)
+#endif
 
 /*
  * Here, we define XASSERT_* style macros if we have C11 Generic Macros.
