@@ -20,8 +20,8 @@
 #include <string.h>
 #include <strings.h>
 
-#include <xlib/xassert.h>
 #include <xlib/xargparse.h>
+#include <xlib/xassert.h>
 
 /* Maximum length of description strings */
 #define MAX_STRING  100

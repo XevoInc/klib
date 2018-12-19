@@ -16,7 +16,8 @@ include = include_directories('include')
 install_subdir('include/xlib', install_dir: 'include')
 
 src = [
-    'src/xargparse.c'
+    'src/xargparse.c',
+    'src/xlog.c'
 ]
 
 lib = library(

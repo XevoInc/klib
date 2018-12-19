@@ -15,30 +15,7 @@
 #ifndef XLIB_XASSERT_H_
 #define XLIB_XASSERT_H_
 
-#include <stdio.h>
-
-static inline
-void xlib_default_log_func(const char *msg)
-{
-    fputs(msg, stderr);
-}
-
-typedef void (*XlibLogFunc)(const char *msg);
-
-#ifdef __cplusplus
-/* The log function needs C linkage so it can be shared between C and C++. */
-extern "C" {
-#endif
-static XlibLogFunc s_xlib_log_func = xlib_default_log_func;
-#ifdef __cplusplus
-}
-#endif
-
-static inline
-void xlib_set_log_func(XlibLogFunc func)
-{
-    s_xlib_log_func = func;
-}
+#include <xlib/xlog.h>
 
 #ifdef __cplusplus
 #include <sstream>
@@ -65,7 +42,7 @@ void _xassert_log_msg_cpp(
     std::stringstream ss;
 
     _xassert_build_base_msg(ss, expr, file, line, func);
-    s_xlib_log_func(ss.str().c_str());
+    xlog(XLOG_CRIT, ss.str().c_str());
 }
 
 template <class X, class Y>
@@ -82,7 +59,7 @@ void _xassert_log_formatted_msg_cpp(
 
     _xassert_build_base_msg(ss, expr, file, line, func);
     ss << "LHS: " << x << "\nRHS: " << y << "\n";
-    s_xlib_log_func(ss.str().c_str());
+    xlog(XLOG_CRIT, ss.str().c_str());
 }
 #endif /* __cplusplus */
 
@@ -468,7 +445,7 @@ void _xassert_log_msg(
 #pragma GCC diagnostic pop
     va_end(args);
 
-    s_xlib_log_func(msg);
+    xlog(XLOG_CRIT, msg);
 }
 #endif
 

@@ -15,4 +15,5 @@ the components deriving from klib.
 * xargparse: generic command-line argument parsing.
 * xassert: generic macro-based assertions.
 * xhash: generic hash table based on double hashing.
+* xlog: generic logging interface.
 * xvec: generic dynamic array.
