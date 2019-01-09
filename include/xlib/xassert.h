@@ -299,6 +299,8 @@ void _xassert_log_formatted_msg_cpp(
                                            "RHS: %f\n", \
     _Atomic long double *:                 "LHS: %p\n" \
                                            "RHS: %p\n", \
+    const void *:                          "LHS: %p\n" \
+                                           "RHS: %p\n", \
     void *:                                "LHS: %p\n" \
                                            "RHS: %p\n" \
     )
