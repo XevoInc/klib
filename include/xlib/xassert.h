@@ -20,7 +20,7 @@
 #ifdef __cplusplus
 #include <sstream>
 
-static inline
+static
 void _xassert_build_base_msg(
     std::stringstream &ss,
     const char *expr,
@@ -32,7 +32,7 @@ void _xassert_build_base_msg(
        << file << ":" << line << " [" << func << "]\n";
 }
 
-static inline
+static
 void _xassert_log_msg_cpp(
     const char *expr,
     const char *file,
@@ -46,7 +46,7 @@ void _xassert_log_msg_cpp(
 }
 
 template <class X, class Y>
-static inline __attribute__ ((__unused__))
+static __attribute__ ((__unused__))
 void _xassert_log_formatted_msg_cpp(
     const X &x,
     const Y &y,
@@ -387,7 +387,7 @@ void _xassert_log_formatted_msg_cpp(
 #define XASSERT_STREQ(s, t) _XASSERT_FMT(strcmp(s, t) == 0, "%s", s, t)
 
 #ifndef __cplusplus
-static inline __attribute__ ((__unused__))
+static __attribute__ ((__unused__))
 void _xassert_log_msg(
     const char *expr,
     const char *file,
