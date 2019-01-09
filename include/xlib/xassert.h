@@ -17,33 +17,30 @@
 
 #include <xlib/xlog.h>
 
+static __attribute__ ((__unused__))
+void _xassert_log_msg(
+    const char *expr,
+    const char *file,
+    int line,
+    const char *func,
+    const char *fmt,
+    ...)
+{
+    va_list args;
+
+    xlog(XLOG_CRIT,
+        "Assert: failed expression (%s) at %s:%d [%s]\n",
+        expr,
+        file,
+        line,
+        func);
+    va_start(args, fmt);
+    xlog_va(XLOG_CRIT, fmt, args);
+    va_end(args);
+}
+
 #ifdef __cplusplus
 #include <sstream>
-
-static
-void _xassert_build_base_msg(
-    std::stringstream &ss,
-    const char *expr,
-    const char *file,
-    int line,
-    const char *func)
-{
-    ss << "Assert: Failed expression (" << expr << ") at "
-       << file << ":" << line << " [" << func << "]\n";
-}
-
-static
-void _xassert_log_msg_cpp(
-    const char *expr,
-    const char *file,
-    int line,
-    const char *func)
-{
-    std::stringstream ss;
-
-    _xassert_build_base_msg(ss, expr, file, line, func);
-    xlog(XLOG_CRIT, ss.str().c_str());
-}
 
 template <class X, class Y>
 static __attribute__ ((__unused__))
@@ -57,9 +54,8 @@ void _xassert_log_formatted_msg_cpp(
 {
     std::stringstream ss;
 
-    _xassert_build_base_msg(ss, expr, file, line, func);
     ss << "LHS: " << x << "\nRHS: " << y << "\n";
-    xlog(XLOG_CRIT, ss.str().c_str());
+    _xassert_log_msg(expr, file, line, func, "%s", ss.str().c_str());
 }
 #endif /* __cplusplus */
 
@@ -90,11 +86,20 @@ void _xassert_log_formatted_msg_cpp(
         } \
     } while (0);
 
+#define XASSERT(expr) \
+    _XASSERT_SKELETON(expr, \
+        _xassert_log_msg( \
+           #expr, \
+           __FILE__, \
+           __LINE__, \
+           __func__, \
+           ""));
+
 #ifndef __cplusplus
 /*
- * C++ doesn't get XASSERT_FMT, which relies on _xassert_log_msg, which is
- * defined only for C. This is because C++ can use templates, which do a better
- * job than XASSERT_FMT anyway.
+ * C++ doesn't get XASSERT_FMT, which relies on prinf-style formatting and
+ * generic macros.  This is because C++ can use templates, which do a better job
+ * than generic macros anyway.
  */
 #define _XASSERT_FMT(expr, fmt, ...) \
     _XASSERT_SKELETON(expr, \
@@ -315,14 +320,6 @@ void _xassert_log_formatted_msg_cpp(
 
 #ifdef __cplusplus
 /* For C++, we implement these using a template function. */
-#define XASSERT(expr) \
-    _XASSERT_SKELETON(expr, \
-        _xassert_log_msg_cpp( \
-           #expr, \
-           __FILE__, \
-           __LINE__, \
-           __func__));
-
 #define _XASSERT_CXX(expr, x, y) _XASSERT_SKELETON(expr, \
     _xassert_log_formatted_msg_cpp(\
         x, \
@@ -342,15 +339,6 @@ void _xassert_log_formatted_msg_cpp(
 #define XASSERT_GTE(x, y) _XASSERT_OP_CXX(>=, x, y)
 
 #else /* C, not C++ */
-
-#define XASSERT(expr) \
-    _XASSERT_SKELETON(expr, \
-        _xassert_log_msg( \
-           #expr, \
-           __FILE__, \
-           __LINE__, \
-           __func__, \
-           ""));
 
 #endif /* __cplusplus */
 
@@ -385,30 +373,6 @@ void _xassert_log_formatted_msg_cpp(
 #define XASSERT_LDBLEQ(x, y) XASSERT_LDBLEQ_THRESH(x, y, DBL_EPSILON)
 
 #define XASSERT_STREQ(s, t) _XASSERT_FMT(strcmp(s, t) == 0, "%s", s, t)
-
-#ifndef __cplusplus
-static __attribute__ ((__unused__))
-void _xassert_log_msg(
-    const char *expr,
-    const char *file,
-    int line,
-    const char *func,
-    const char *fmt,
-    ...)
-{
-    va_list args;
-
-    xlog(XLOG_CRIT,
-        "Assert: failed expression (%s) at %s:%d [%s]\n",
-        expr,
-        file,
-        line,
-        func);
-    va_start(args, fmt);
-    xlog_va(XLOG_CRIT, fmt, args);
-    va_end(args);
-}
-#endif
 
 #define _XASSERT_ERRCODE(x, y, strerror_func) \
     _XASSERT_FMT(x == y, "%d (%s)", x, strerror_func(x), y, strerror_func(y))
