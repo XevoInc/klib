@@ -13,6 +13,7 @@ void xlog_default_func(XlogPriority priority, const char *fmt, va_list args)
     }
 
     vfprintf(dst, fmt, args);
+    fputc('\n', dst);
 }
 
 static XlogPriority s_priority = XLOG_WARNING;
