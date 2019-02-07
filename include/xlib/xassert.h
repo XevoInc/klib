@@ -18,7 +18,34 @@
 #include <xlib/xlog.h>
 
 static __attribute__ ((__unused__))
-void _xassert_log_msg(
+void _xassert_log_base(
+    const char *expr,
+    const char *file,
+    int line,
+    const char *func)
+{
+    xlog(XLOG_CRIT,
+        "Assert: failed expression (%s) at %s:%d [%s]",
+        expr,
+        file,
+        line,
+        func);
+}
+
+static __attribute__ ((__unused__))
+void _xassert_log_extra(
+    const char *expr,
+    const char *file,
+    int line,
+    const char *func,
+    const char *extra)
+{
+    _xassert_log_base(expr, file, line, func);
+    xlog(XLOG_CRIT, extra);
+}
+
+static __attribute__ ((__unused__))
+void _xassert_log_fmt(
     const char *expr,
     const char *file,
     int line,
@@ -28,12 +55,8 @@ void _xassert_log_msg(
 {
     va_list args;
 
-    xlog(XLOG_CRIT,
-        "Assert: failed expression (%s) at %s:%d [%s]\n",
-        expr,
-        file,
-        line,
-        func);
+    _xassert_log_base(expr, file, line, func);
+
     va_start(args, fmt);
     xlog_va(XLOG_CRIT, fmt, args);
     va_end(args);
@@ -54,8 +77,8 @@ void _xassert_log_formatted_msg_cpp(
 {
     std::stringstream ss;
 
-    ss << "LHS: " << x << "\nRHS: " << y << "\n";
-    _xassert_log_msg(expr, file, line, func, "%s", ss.str().c_str());
+    ss << "LHS: " << x << "\nRHS: " << y;
+    _xassert_log_extra(expr, file, line, func, ss.str().c_str());
 }
 #endif /* __cplusplus */
 
@@ -88,12 +111,11 @@ void _xassert_log_formatted_msg_cpp(
 
 #define XASSERT(expr) \
     _XASSERT_SKELETON(expr, \
-        _xassert_log_msg( \
+        _xassert_log_base( \
            #expr, \
            __FILE__, \
            __LINE__, \
-           __func__, \
-           ""));
+           __func__));
 
 #ifndef __cplusplus
 /*
@@ -103,12 +125,12 @@ void _xassert_log_formatted_msg_cpp(
  */
 #define _XASSERT_FMT(expr, fmt, ...) \
     _XASSERT_SKELETON(expr, \
-        _xassert_log_msg( \
+        _xassert_log_fmt( \
             #expr, \
             __FILE__, \
             __LINE__, \
             __func__, \
-            "LHS: " fmt "\nRHS: " fmt "\n", \
+            "LHS: " fmt "\nRHS: " fmt, \
             __VA_ARGS__));
 
 #define _XASSERT_OP_FMT(op, fmt, x, y) _XASSERT_FMT((x) op (y), fmt, x, y)
@@ -132,182 +154,182 @@ void _xassert_log_formatted_msg_cpp(
 
 #define _XFMT(x) _Generic((x), \
     char:                                  "LHS: %c\n" \
-                                           "RHS: %c\n", \
+                                           "RHS: %c", \
     const char:                            "LHS: %c\n" \
-                                           "RHS: %c\n", \
+                                           "RHS: %c", \
     char *:                                "LHS: %c\n" \
-                                           "RHS: %c\n", \
+                                           "RHS: %c", \
     const char *:                          "LHS: %c\n" \
-                                           "RHS: %c\n", \
+                                           "RHS: %c", \
     _Atomic char:                          "LHS: %c\n" \
-                                           "RHS: %c\n", \
+                                           "RHS: %c", \
     _Atomic char *:                        "LHS: %p\n" \
-                                           "RHS: %p\n", \
+                                           "RHS: %p", \
     signed char:                           "LHS: %hhd\n" \
-                                           "RHS: %hhd\n", \
+                                           "RHS: %hhd", \
     const signed char:                     "LHS: %hhd\n" \
-                                           "RHS: %hhd\n", \
+                                           "RHS: %hhd", \
     signed char *:                         "LHS: %hhd\n" \
-                                           "RHS: %hhd\n", \
+                                           "RHS: %hhd", \
     const signed char *:                   "LHS: %hhd\n" \
-                                           "RHS: %hhd\n", \
+                                           "RHS: %hhd", \
     _Atomic signed char:                   "LHS: %hhd\n" \
-                                           "RHS: %hhd\n", \
+                                           "RHS: %hhd", \
     _Atomic signed char *:                 "LHS: %p\n" \
-                                           "RHS: %p\n", \
+                                           "RHS: %p", \
     unsigned char:                         "LHS: %hhu\n" \
-                                           "RHS: %hhu\n", \
+                                           "RHS: %hhu", \
     const unsigned char:                   "LHS: %hhu\n" \
-                                           "RHS: %hhu\n", \
+                                           "RHS: %hhu", \
     unsigned char *:                       "LHS: %hhu\n" \
-                                           "RHS: %hhu\n", \
+                                           "RHS: %hhu", \
     const unsigned char *:                 "LHS: %hhu\n" \
-                                           "RHS: %hhu\n", \
+                                           "RHS: %hhu", \
     _Atomic unsigned char:                 "LHS: %hhu\n" \
-                                           "RHS: %hhu\n", \
+                                           "RHS: %hhu", \
     _Atomic unsigned char *:               "LHS: %p\n" \
-                                           "RHS: %p\n", \
+                                           "RHS: %p", \
     signed short:                          "LHS: %hd\n" \
-                                           "RHS: %hd\n", \
+                                           "RHS: %hd", \
     const signed short:                    "LHS: %hd\n" \
-                                           "RHS: %hd\n", \
+                                           "RHS: %hd", \
     signed short *:                        "LHS: %hd\n" \
-                                           "RHS: %hd\n", \
+                                           "RHS: %hd", \
     const signed short *:                  "LHS: %hd\n" \
-                                           "RHS: %hd\n", \
+                                           "RHS: %hd", \
     _Atomic signed short:                  "LHS: %hd\n" \
-                                           "RHS: %hd\n", \
+                                           "RHS: %hd", \
     _Atomic signed short *:                "LHS: %p\n" \
-                                           "RHS: %p\n", \
+                                           "RHS: %p", \
     unsigned short:                        "LHS: %hu\n" \
-                                           "RHS: %hu\n", \
+                                           "RHS: %hu", \
     const unsigned short:                  "LHS: %hu\n" \
-                                           "RHS: %hu\n", \
+                                           "RHS: %hu", \
     unsigned short *:                      "LHS: %hu\n" \
-                                           "RHS: %hu\n", \
+                                           "RHS: %hu", \
     const unsigned short *:                "LHS: %hu\n" \
-                                           "RHS: %hu\n", \
+                                           "RHS: %hu", \
     _Atomic unsigned short:                "LHS: %hu\n" \
-                                           "RHS: %hu\n", \
+                                           "RHS: %hu", \
     _Atomic unsigned short *:              "LHS: %p\n" \
-                                           "RHS: %p\n", \
+                                           "RHS: %p", \
     signed int:                            "LHS: %d\n" \
-                                           "RHS: %d\n", \
+                                           "RHS: %d", \
     const signed int:                      "LHS: %d\n" \
-                                           "RHS: %d\n", \
+                                           "RHS: %d", \
     signed int *:                          "LHS: %d\n" \
-                                           "RHS: %d\n", \
+                                           "RHS: %d", \
     const signed int *:                    "LHS: %d\n" \
-                                           "RHS: %d\n", \
+                                           "RHS: %d", \
     _Atomic signed int:                    "LHS: %d\n" \
-                                           "RHS: %d\n", \
+                                           "RHS: %d", \
     _Atomic signed int *:                  "LHS: %p\n" \
-                                           "RHS: %p\n", \
+                                           "RHS: %p", \
     unsigned int:                          "LHS: %u\n" \
-                                           "RHS: %u\n", \
+                                           "RHS: %u", \
     const unsigned int:                    "LHS: %u\n" \
-                                           "RHS: %u\n", \
+                                           "RHS: %u", \
     unsigned int *:                        "LHS: %u\n" \
-                                           "RHS: %u\n", \
+                                           "RHS: %u", \
     const unsigned int *:                  "LHS: %u\n" \
-                                           "RHS: %u\n", \
+                                           "RHS: %u", \
     _Atomic unsigned int:                  "LHS: %u\n" \
-                                           "RHS: %u\n", \
+                                           "RHS: %u", \
     _Atomic unsigned int *:                "LHS: %p\n" \
-                                           "RHS: %p\n", \
+                                           "RHS: %p", \
     long int:                              "LHS: %ld\n" \
-                                           "RHS: %ld\n", \
+                                           "RHS: %ld", \
     const long int:                        "LHS: %ld\n" \
-                                           "RHS: %ld\n", \
+                                           "RHS: %ld", \
     long int *:                            "LHS: %ld\n" \
-                                           "RHS: %ld\n", \
+                                           "RHS: %ld", \
     const long int *:                      "LHS: %ld\n" \
-                                           "RHS: %ld\n", \
+                                           "RHS: %ld", \
     _Atomic long int:                      "LHS: %ld\n" \
-                                           "RHS: %ld\n", \
+                                           "RHS: %ld", \
     _Atomic long int *:                    "LHS: %p\n" \
-                                           "RHS: %p\n", \
+                                           "RHS: %p", \
     unsigned long int:                     "LHS: %lu\n" \
-                                           "RHS: %lu\n", \
+                                           "RHS: %lu", \
     const unsigned long int:               "LHS: %lu\n" \
-                                           "RHS: %lu\n", \
+                                           "RHS: %lu", \
     unsigned long int *:                   "LHS: %lu\n" \
-                                           "RHS: %lu\n", \
+                                           "RHS: %lu", \
     const unsigned long int *:             "LHS: %lu\n" \
-                                           "RHS: %lu\n", \
+                                           "RHS: %lu", \
     _Atomic unsigned long int:             "LHS: %lu\n" \
-                                           "RHS: %lu\n", \
+                                           "RHS: %lu", \
     _Atomic unsigned long int *:           "LHS: %p\n" \
-                                           "RHS: %p\n", \
+                                           "RHS: %p", \
     long long int:                         "LHS: %lld\n" \
-                                           "RHS: %lld\n", \
+                                           "RHS: %lld", \
     const long long int:                   "LHS: %lld\n" \
-                                           "RHS: %lld\n", \
+                                           "RHS: %lld", \
     long long int *:                       "LHS: %lld\n" \
-                                           "RHS: %lld\n", \
+                                           "RHS: %lld", \
     const long long int *:                 "LHS: %lld\n" \
-                                           "RHS: %lld\n", \
+                                           "RHS: %lld", \
     _Atomic long long int:                 "LHS: %lld\n" \
-                                           "RHS: %lld\n", \
+                                           "RHS: %lld", \
     _Atomic long long int *:               "LHS: %p\n" \
-                                           "RHS: %p\n", \
+                                           "RHS: %p", \
     unsigned long long int:                "LHS: %llu\n" \
-                                           "RHS: %llu\n", \
+                                           "RHS: %llu", \
     const unsigned long long int:          "LHS: %llu\n" \
-                                           "RHS: %llu\n", \
+                                           "RHS: %llu", \
     unsigned long long int *:              "LHS: %llu\n" \
-                                           "RHS: %llu\n", \
+                                           "RHS: %llu", \
     const unsigned long long int *:        "LHS: %llu\n" \
-                                           "RHS: %llu\n", \
+                                           "RHS: %llu", \
     _Atomic unsigned long long int:        "LHS: %llu\n" \
-                                           "RHS: %llu\n", \
+                                           "RHS: %llu", \
     _Atomic unsigned long long int *:      "LHS: %p\n" \
-                                           "RHS: %p\n", \
+                                           "RHS: %p", \
     float:                                 "LHS: %f\n" \
-                                           "RHS: %f\n", \
+                                           "RHS: %f", \
     const float:                           "LHS: %f\n" \
-                                           "RHS: %f\n", \
+                                           "RHS: %f", \
     float *:                               "LHS: %f\n" \
-                                           "RHS: %f\n", \
+                                           "RHS: %f", \
     const float *:                         "LHS: %f\n" \
-                                           "RHS: %f\n", \
+                                           "RHS: %f", \
     _Atomic float:                         "LHS: %f\n" \
-                                           "RHS: %f\n", \
+                                           "RHS: %f", \
     _Atomic float *:                       "LHS: %p\n" \
-                                           "RHS: %p\n", \
+                                           "RHS: %p", \
     double:                                "LHS: %f\n" \
-                                           "RHS: %f\n", \
+                                           "RHS: %f", \
     const double:                          "LHS: %f\n" \
-                                           "RHS: %f\n", \
+                                           "RHS: %f", \
     double *:                              "LHS: %f\n" \
-                                           "RHS: %f\n", \
+                                           "RHS: %f", \
     const double *:                        "LHS: %f\n" \
-                                           "RHS: %f\n", \
+                                           "RHS: %f", \
     _Atomic double:                        "LHS: %f\n" \
-                                           "RHS: %f\n", \
+                                           "RHS: %f", \
     _Atomic double *:                      "LHS: %p\n" \
-                                           "RHS: %p\n", \
+                                           "RHS: %p", \
     long double:                           "LHS: %f\n" \
-                                           "RHS: %f\n", \
+                                           "RHS: %f", \
     const long double:                     "LHS: %f\n" \
-                                           "RHS: %f\n", \
+                                           "RHS: %f", \
     long double *:                         "LHS: %f\n" \
-                                           "RHS: %f\n", \
+                                           "RHS: %f", \
     const long double *:                   "LHS: %f\n" \
-                                           "RHS: %f\n", \
+                                           "RHS: %f", \
     _Atomic long double:                   "LHS: %f\n" \
-                                           "RHS: %f\n", \
+                                           "RHS: %f", \
     _Atomic long double *:                 "LHS: %p\n" \
-                                           "RHS: %p\n", \
+                                           "RHS: %p", \
     const void *:                          "LHS: %p\n" \
-                                           "RHS: %p\n", \
+                                           "RHS: %p", \
     void *:                                "LHS: %p\n" \
-                                           "RHS: %p\n" \
+                                           "RHS: %p" \
     )
 
 #define _XASSERT_GENERIC(expr, x, y) \
     _XASSERT_SKELETON(expr, \
-        _xassert_log_msg(#expr, __FILE__, __LINE__, __func__, _XFMT(x), x, y));
+        _xassert_log_fmt(#expr, __FILE__, __LINE__, __func__, _XFMT(x), x, y));
 
 #define _XASSERT_OP_GENERIC(op, x, y) _XASSERT_GENERIC((x) op (y), x, y)
 
