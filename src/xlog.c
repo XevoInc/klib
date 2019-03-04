@@ -1,7 +1,14 @@
 #include <xlib/xassert.h>
 #include <xlib/xlog.h>
 
-void xlog_default_func(XlogPriority priority, const char *fmt, va_list args)
+void xlog_default_func(
+    XlogPriority priority,
+    bool print_loc,
+    const char *file,
+    int line,
+    const char *func,
+    const char *fmt,
+    va_list args)
 {
     FILE *dst;
 
@@ -13,6 +20,9 @@ void xlog_default_func(XlogPriority priority, const char *fmt, va_list args)
     }
 
     vfprintf(dst, fmt, args);
+    if (print_loc) {
+        fprintf(dst, " at %s:%d [%s]", file, line, func);
+    }
     fputc('\n', dst);
 }
 
@@ -43,16 +53,31 @@ bool xlog_enabled(XlogPriority priority)
  * logging is disabled. Since we want absolutely minimal overhead when
  * logging is disabled, we have a small bit of redundancy. Sigh.
  */
-void xlog_va(XlogPriority priority, const char *fmt, va_list args)
+void _xlog_va(
+    XlogPriority priority,
+    bool print_loc,
+    const char *file,
+    int line,
+    const char *func,
+    const char *fmt,
+    va_list args)
 {
     if (!xlog_enabled(priority)) {
         return;
     }
 
-    s_log_func(priority, fmt, args);
+    s_log_func(priority, print_loc, file, line, func, fmt, args);
+
 }
 
-void xlog(XlogPriority priority, const char *fmt, ...)
+void _xlog(
+    XlogPriority priority,
+    bool print_loc,
+    const char *file,
+    int line,
+    const char *func,
+    const char *fmt,
+    ...)
 {
     va_list args;
 
@@ -61,25 +86,6 @@ void xlog(XlogPriority priority, const char *fmt, ...)
     }
 
     va_start(args, fmt);
-    s_log_func(priority, fmt, args);
+    s_log_func(priority, print_loc, file, line, func, fmt, args);
     va_end(args);
-}
-
-static
-void _xlog_nofmt(XlogPriority priority, ...)
-{
-    va_list args;
-
-    va_start(args, priority);
-    s_log_func(priority, "%s", args);
-    va_end(args);
-}
-
-void xlog_nofmt(XlogPriority priority, const char *msg)
-{
-    if (!xlog_enabled(priority)) {
-        return;
-    }
-
-    _xlog_nofmt(priority, msg);
 }

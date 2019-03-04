@@ -19,17 +19,20 @@
 
 static __attribute__ ((__unused__))
 void _xassert_log_base(
+    bool print_loc,
     const char *expr,
     const char *file,
     int line,
     const char *func)
 {
-    xlog(XLOG_CRIT,
-        "Assert: failed expression (%s) at %s:%d [%s]",
-        expr,
+    _xlog(
+        XLOG_CRIT,
+        print_loc,
         file,
         line,
-        func);
+        func,
+        "Assert: failed expression (%s)",
+        expr);
 }
 
 static __attribute__ ((__unused__))
@@ -40,8 +43,8 @@ void _xassert_log_extra(
     const char *func,
     const char *extra)
 {
-    _xassert_log_base(expr, file, line, func);
-    xlog(XLOG_CRIT, extra);
+    _xassert_log_base(false, expr, file, line, func);
+    _xlog(XLOG_CRIT, true, file, line, func, extra);
 }
 
 static __attribute__ ((__unused__))
@@ -55,10 +58,10 @@ void _xassert_log_fmt(
 {
     va_list args;
 
-    _xassert_log_base(expr, file, line, func);
+    _xassert_log_base(false, expr, file, line, func);
 
     va_start(args, fmt);
-    xlog_va(XLOG_CRIT, fmt, args);
+    _xlog_va(XLOG_CRIT, true, file, line, func, fmt, args);
     va_end(args);
 }
 
@@ -112,6 +115,7 @@ void _xassert_log_formatted_msg_cpp(
 #define XASSERT(expr) \
     _XASSERT_SKELETON(expr, \
         _xassert_log_base( \
+           true, \
            #expr, \
            __FILE__, \
            __LINE__, \

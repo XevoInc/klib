@@ -56,7 +56,14 @@ static_assert(XLOG_DEBUG == LOG_DEBUG, _XLIB_SYSLOG_MSG);
 extern "C" {
 #endif
 
-typedef void (*XlogFunc)(XlogPriority priority, const char *fmt, va_list args);
+typedef void (*XlogFunc)(
+    XlogPriority priority,
+    bool print_loc,
+    const char *file,
+    int line,
+    const char *func,
+    const char *fmt,
+    va_list args);
 
 /**
  * Set the global log priority.
@@ -88,7 +95,31 @@ bool xlog_enabled(XlogPriority priority);
  * @param fmt a printf-style formatting message
  * @param ... additional formatting arguments
  */
-void xlog(XlogPriority priority, const char *fmt, ...);
+#define xlog(priority, fmt, ...) _xlog( \
+    priority, \
+    true, \
+    __FILE__, \
+    __LINE__, \
+    __func__, \
+    fmt, \
+    __VA_ARGS__)
+
+#define xlog_nofmt(priority, fmt) _xlog( \
+    priority, \
+    true, \
+    __FILE__, \
+    __LINE__, \
+    __func__, \
+    fmt)
+
+void _xlog(
+    XlogPriority priority,
+    bool print_loc,
+    const char *file,
+    int line,
+    const char *func,
+    const char *fmt,
+    ...);
 
 /**
  * Log a message. This is the same as xlog but takes a va_list.
@@ -97,16 +128,17 @@ void xlog(XlogPriority priority, const char *fmt, ...);
  * @param fmt a printf-style formatting message
  * @param args a var-args va_list
  */
-void xlog_va(XlogPriority priority, const char *fmt, va_list args);
+#define xlog_va(priority, fmt, ...) _xlog_va(priority, true, __FILE__, __LINE__, __func__, fmt, __VA_ARGS__)
+#define xlog_va_nofmt(priority, fmt) _xlog_va(priority, true, __FILE__, __LINE__, __func__, fmt)
 
-/**
- * Log a message without formatting. This is a convenience routine equivalent to
- * xlog(priority, "%s", msg).
- *
- * @param priority a log priority
- * @param msg a message that does not need formatting
- */
-void xlog_nofmt(XlogPriority priority, const char *msg);
+void _xlog_va(
+    XlogPriority priority,
+    bool print_loc,
+    const char *file,
+    int line,
+    const char *func,
+    const char *fmt,
+    va_list args);
 
 #ifdef __cplusplus
 }
