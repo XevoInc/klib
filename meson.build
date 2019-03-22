@@ -38,7 +38,7 @@ xlib_dep = declare_dependency(link_with: lib, include_directories: include)
 
 executable(
     'test_argparse',
-    ['test/test_argparse.c'],
+    ['test/test-argparse.c'],
     link_with: lib,
     include_directories: include
 )
