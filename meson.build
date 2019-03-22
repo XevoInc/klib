@@ -36,8 +36,6 @@ pkg.generate(
     version: meson.project_version())
 xlib_dep = declare_dependency(link_with: lib, include_directories: include)
 
-# unit tests FIXME - compile all C files in test directory
-
 executable(
     'test_argparse',
     ['test/test_argparse.c'],
