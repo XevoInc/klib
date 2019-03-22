@@ -9,23 +9,32 @@ project('xlib', 'c', 'cpp',
     ],
 )
 
-add_project_arguments([], language: 'c')
-
 # Includes.
 include = include_directories('include')
-install_subdir('include/xlib', install_dir: 'include')
 
-src = [
-    'src/xargparse.c',
-    'src/xlog.c'
-]
+src = []
+if get_option('xlog')
+    src += 'src/xlog.c'
+    install_headers('include/xlib/xlog.h', subdir: 'xlib')
+endif
+if get_option('xargparse')
+    src += 'src/xargparse.c'
+    install_headers('include/xlib/xargparse.h', subdir: 'xlib')
+endif
 
-lib = library(
-    'xlib',
-    src,
-    include_directories: include,
-    install: true,
-    version: meson.project_version())
+install_headers('include/xlib/xassert.h', subdir: 'xlib')
+install_headers('include/xlib/xhash.h', subdir: 'xlib')
+install_headers('include/xlib/xvec.h', subdir: 'xlib')
+
+# If we have no sources, we will do a header-only install.
+if src.length() > 0
+    lib = library(
+        'xlib',
+        src,
+        include_directories: include,
+        install: true,
+        version: meson.project_version())
+endif
 
 # pkg-config
 pkg = import('pkgconfig')
@@ -36,9 +45,11 @@ pkg.generate(
     version: meson.project_version())
 xlib_dep = declare_dependency(link_with: lib, include_directories: include)
 
-executable(
-    'test_argparse',
-    ['test/test-argparse.c'],
-    link_with: lib,
-    include_directories: include
-)
+if get_option('xargparse') and get_option('tests')
+    executable(
+        'test_argparse',
+        ['test/test-argparse.c'],
+        link_with: lib,
+        include_directories: include
+    )
+endif
