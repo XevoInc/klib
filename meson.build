@@ -42,9 +42,3 @@ executable(
     link_with: lib,
     include_directories: include
 )
-
-# Convenient targets.
-run_target(
-    'run-test_cmd_opt',
-    command: join_paths(meson.current_build_dir(), 'test_cmd_opt'))
-
