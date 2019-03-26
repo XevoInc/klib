@@ -1,0 +1,10 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+
+Name: xlib
+Description: @PROJECT_DESCRIPTION@
+Requires: xlib
+Version: @PROJECT_VERSION@
+Libs: -L${libdir} -lxlib
+Cflags: -I${includedir}

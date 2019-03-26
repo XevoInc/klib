@@ -1,3 +1,0 @@
-option('xlog', type: 'boolean', description: 'build xlog', value: true)
-option('xargparse', type: 'boolean', description: 'build xargparse', value: true)
-option('tests', type: 'boolean', description: 'build tests', value: true)
