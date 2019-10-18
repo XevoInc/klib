@@ -15,7 +15,7 @@ project(xlib
         LANGUAGES C)
 
 set(CMAKE_C_STANDARD_DEFAULT 11)
-add_compile_options(-Wall -Wextra -Wshadow -Wpedantic -Wshadow)
+add_compile_options(-Wall -Werror -Wextra -Wshadow -Wpedantic -Wshadow)
 
 option(BUILD_XARGPARSE "Build xargparse" ON)
 cmake_dependent_option(
