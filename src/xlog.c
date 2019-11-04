@@ -48,7 +48,7 @@ bool xlog_enabled(XlogPriority priority)
 }
 
 /*
- * We could reduce duplication by having all these functiosn call into
+ * We could reduce duplication by having all these functions call into
  * xlog_va, but that would mean we have to call va_start even if later
  * logging is disabled. Since we want absolutely minimal overhead when
  * logging is disabled, we have a small bit of redundancy. Sigh.
@@ -67,7 +67,6 @@ void _xlog_va(
     }
 
     s_log_func(priority, print_loc, file, line, func, fmt, args);
-
 }
 
 void _xlog(
