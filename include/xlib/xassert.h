@@ -43,8 +43,8 @@ void _xassert_log_extra(
     const char *func,
     const char *extra)
 {
-    _xassert_log_base(false, expr, file, line, func);
-    _xlog(XLOG_CRIT, true, file, line, func, extra);
+    _xassert_log_base(true, expr, file, line, func);
+    _xlog(XLOG_CRIT, false, file, line, func, extra);
 }
 
 static __attribute__ ((__unused__))
@@ -58,10 +58,10 @@ void _xassert_log_fmt(
 {
     va_list args;
 
-    _xassert_log_base(false, expr, file, line, func);
+    _xassert_log_base(true, expr, file, line, func);
 
     va_start(args, fmt);
-    _xlog_va(XLOG_CRIT, true, file, line, func, fmt, args);
+    _xlog_va(XLOG_CRIT, false, file, line, func, fmt, args);
     va_end(args);
 }
 

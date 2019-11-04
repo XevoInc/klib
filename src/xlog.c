@@ -19,10 +19,10 @@ void xlog_default_func(
         dst = stdout;
     }
 
-    vfprintf(dst, fmt, args);
     if (print_loc) {
-        fprintf(dst, " at %s:%d [%s]", file, line, func);
+        fprintf(dst, "%s:%d [%s]:\n", file, line, func);
     }
+    vfprintf(dst, fmt, args);
     fputc('\n', dst);
 }
 
