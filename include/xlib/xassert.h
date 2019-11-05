@@ -366,20 +366,17 @@ void _xassert_log_formatted_msg_cpp(
 #define XASSERT_GT(x, y) _XASSERT_OP_CXX(>, x, y)
 #define XASSERT_GTE(x, y) _XASSERT_OP_CXX(>=, x, y)
 
-#else /* C, not C++ */
-
-#endif /* __cplusplus */
-
-#if defined(__cplusplus) && (__cplusplus >= 201103L)
 /* Needed for std::nullptr_t. */
 #include <cstddef>
-#define _XASSERT_NULL_SYMBOL nullptr
-#else
-#define _XASSERT_NULL_SYMBOL NULL
-#endif
+#define XASSERT_NULL(x) XASSERT((x) == nullptr)
+#define XASSERT_NOT_NULL(x) XASSERT((x) != nullptr)
 
-#define XASSERT_NULL(x) XASSERT((x) == _XASSERT_NULL_SYMBOL)
-#define XASSERT_NOT_NULL(x) XASSERT((x) != _XASSERT_NULL_SYMBOL)
+#else /* C, not C++ */
+
+#define XASSERT_NULL(x) XASSERT((x) == NULL)
+#define XASSERT_NOT_NULL(x) XASSERT((x) != NULL)
+
+#endif /* __cplusplus */
 
 #define XASSERT_FALSE(expr) XASSERT(!(expr))
 
