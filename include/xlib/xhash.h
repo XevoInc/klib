@@ -247,16 +247,16 @@ static const double __ac_HASH_UPPER = 0.77;
 		}																\
 		return 0;														\
 	}																	\
-	SCOPE xhint_t xh_put_##name(xh_##name##_t *h, xhkey_t key, int *ret) \
+	SCOPE xlib_error xh_put_##name(xh_##name##_t *h, xhkey_t key, xhint_t *n_buckets) \
 	{																	\
 		xhint_t x;														\
 		if (h->n_occupied >= h->upper_bound) { /* update the hash table */ \
 			if (h->n_buckets > (h->size<<1)) {							\
 				if (xh_resize_##name(h, h->n_buckets - 1) < 0) { /* clear "deleted" elements */ \
-					*ret = -1; return h->n_buckets;						\
+					*n_buckets = h->n_buckets; return XLIB_ERROR_OP_FAILED; \
 				}														\
 			} else if (xh_resize_##name(h, h->n_buckets + 1) < 0) { /* expand the hash table */ \
-				*ret = -1; return h->n_buckets;							\
+				*n_buckets = h->n_buckets; return XLIB_ERROR_OP_FAILED; \
 			}															\
 		} /* TODO: to implement automatically shrinking; resize() already support shrinking */ \
 		{																\
@@ -276,18 +276,19 @@ static const double __ac_HASH_UPPER = 0.77;
 				}														\
 			}															\
 		}																\
+		xlib_error err;                                                 \
 		if (__ac_isempty(h->flags, x)) { /* not present at all */		\
 			h->keys[x] = key;											\
 			__ac_set_isboth_false(h->flags, x);							\
 			++h->size; ++h->n_occupied;									\
-			*ret = 1;													\
+			err = XLIB_ERROR_BUCKET_EMPTY;								\
 		} else if (__ac_isdel(h->flags, x)) { /* deleted */				\
 			h->keys[x] = key;											\
 			__ac_set_isboth_false(h->flags, x);							\
 			++h->size;													\
-			*ret = 2;													\
-		} else *ret = 0; /* Don't touch h->keys[x] if present and not deleted */ \
-		return x;														\
+			err = XLIB_ERROR_ELEM_DELETED;								\
+		} else err = 0; /* Don't touch h->keys[x] if present and not deleted */ \
+		return err;														\
 	}																	\
 	SCOPE void xh_del_##name(xh_##name##_t *h, xhint_t x)				\
 	{																	\
