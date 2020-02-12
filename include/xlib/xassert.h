@@ -401,6 +401,6 @@ void _xassert_log_formatted_msg_cpp(
 #define XASSERT_STREQ(s, t) _XASSERT_FMT(strcmp(s, t) == 0, "%s", s, t)
 
 #define _XASSERT_ERRCODE(x, y, strerror_func) \
-    _XASSERT_FMT(x == y, "%d (%s)", x, strerror_func(x), y, strerror_func(y))
+    _XASSERT_FMT((x) == (y), "%d (%s)", x, strerror_func(x), y, strerror_func(y))
 
 #endif /* XLIB_XASSERT_H_ */
