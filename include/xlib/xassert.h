@@ -15,7 +15,6 @@
 #ifndef XLIB_XASSERT_H_
 #define XLIB_XASSERT_H_
 
-#include <signal.h>
 #include <xlib/xlog.h>
 
 static __attribute__ ((__unused__))
@@ -108,7 +107,7 @@ void _xassert_log_formatted_msg_cpp(
         } \
         else { \
             log_code; \
-            kill(0, SIGABRT); \
+            abort(); \
             __builtin_unreachable(); \
         } \
     } while (0);
