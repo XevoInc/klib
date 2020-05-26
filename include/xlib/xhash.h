@@ -78,6 +78,7 @@ int main() {
 #include <string.h>
 #include <limits.h>
 #include <stdint.h>
+#include <xlib/alloc.h>
 
 /* compiler specific configuration */
 
@@ -115,23 +116,6 @@ typedef xhint_t xhiter_t;
 
 #define __ac_fsize(m) ((m) < 16? 1 : (m)>>4)
 
-#ifndef kroundup32
-#define kroundup32(x) (--(x), (x)|=(x)>>1, (x)|=(x)>>2, (x)|=(x)>>4, (x)|=(x)>>8, (x)|=(x)>>16, ++(x))
-#endif
-
-#ifndef kcalloc
-#define kcalloc(N,Z) calloc(N,Z)
-#endif
-#ifndef kmalloc
-#define kmalloc(Z) malloc(Z)
-#endif
-#ifndef krealloc
-#define krealloc(P,Z) realloc(P,Z)
-#endif
-#ifndef kfree
-#define kfree(P) free(P)
-#endif
-
 static const double __ac_HASH_UPPER = 0.77;
 
 #define __XHASH_TYPE(name, xhkey_t, xhval_t) \
@@ -153,14 +137,14 @@ static const double __ac_HASH_UPPER = 0.77;
 
 #define __XHASH_IMPL(name, SCOPE, xhkey_t, xhval_t, xh_is_map, __hash_func, __hash_equal) \
 	SCOPE xh_##name##_t *xh_init_##name(void) {							\
-		return (xh_##name##_t*)kcalloc(1, sizeof(xh_##name##_t));		\
+		return (xh_##name##_t*)xcalloc(1, sizeof(xh_##name##_t));		\
 	}																	\
 	SCOPE void xh_destroy_##name(xh_##name##_t *h)						\
 	{																	\
 		if (h) {														\
-			kfree((void *)h->keys); kfree(h->flags);					\
-			kfree((void *)h->vals);										\
-			kfree(h);													\
+			xfree((void *)h->keys); xfree(h->flags);					\
+			xfree((void *)h->vals);										\
+			xfree(h);													\
 		}																\
 	}																	\
 	SCOPE void xh_clear_##name(xh_##name##_t *h)						\
@@ -189,20 +173,20 @@ static const double __ac_HASH_UPPER = 0.77;
 		xhint32_t *new_flags = 0;										\
 		xhint_t j = 1;													\
 		{																\
-			kroundup32(new_n_buckets); 									\
+			xroundup32(new_n_buckets); 									\
 			if (new_n_buckets < 4) new_n_buckets = 4;					\
 			if (h->size >= (xhint_t)(new_n_buckets * __ac_HASH_UPPER + 0.5)) j = 0;	/* requested size is too small */ \
 			else { /* hash table size to be changed (shrink or expand); rehash */ \
-				new_flags = (xhint32_t*)kmalloc(__ac_fsize(new_n_buckets) * sizeof(xhint32_t));	\
+				new_flags = (xhint32_t*)xmalloc(__ac_fsize(new_n_buckets) * sizeof(xhint32_t));	\
 				if (!new_flags) return -1;								\
 				memset(new_flags, 0xaa, __ac_fsize(new_n_buckets) * sizeof(xhint32_t)); \
 				if (h->n_buckets < new_n_buckets) {	/* expand */		\
-					xhkey_t *new_keys = (xhkey_t*)krealloc((void *)h->keys, new_n_buckets * sizeof(xhkey_t)); \
-					if (!new_keys) { kfree(new_flags); return -1; }		\
+					xhkey_t *new_keys = (xhkey_t*)xrealloc((void *)h->keys, new_n_buckets * sizeof(xhkey_t)); \
+					if (!new_keys) { xfree(new_flags); return -1; }		\
 					h->keys = new_keys;									\
 					if (xh_is_map) {									\
-						xhval_t *new_vals = (xhval_t*)krealloc((void *)h->vals, new_n_buckets * sizeof(xhval_t)); \
-						if (!new_vals) { kfree(new_flags); return -1; }	\
+						xhval_t *new_vals = (xhval_t*)xrealloc((void *)h->vals, new_n_buckets * sizeof(xhval_t)); \
+						if (!new_vals) { xfree(new_flags); return -1; }	\
 						h->vals = new_vals;								\
 					}													\
 				} /* otherwise shrink */								\
@@ -236,10 +220,10 @@ static const double __ac_HASH_UPPER = 0.77;
 				}														\
 			}															\
 			if (h->n_buckets > new_n_buckets) { /* shrink the hash table */ \
-				h->keys = (xhkey_t*)krealloc((void *)h->keys, new_n_buckets * sizeof(xhkey_t)); \
-				if (xh_is_map) h->vals = (xhval_t*)krealloc((void *)h->vals, new_n_buckets * sizeof(xhval_t)); \
+				h->keys = (xhkey_t*)xrealloc((void *)h->keys, new_n_buckets * sizeof(xhkey_t)); \
+				if (xh_is_map) h->vals = (xhval_t*)xrealloc((void *)h->vals, new_n_buckets * sizeof(xhval_t)); \
 			}															\
-			kfree(h->flags); /* free the working space */				\
+			xfree(h->flags); /* free the working space */				\
 			h->flags = new_flags;										\
 			h->n_buckets = new_n_buckets;								\
 			h->n_occupied = h->size;									\

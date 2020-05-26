@@ -67,6 +67,7 @@ int main() {
 #define XLIB_XVEC_H_
 
 #include <stdlib.h>
+#include <xlib/alloc.h>
 
 #define xv_roundup32(x) (--(x), (x)|=(x)>>1, (x)|=(x)>>2, (x)|=(x)>>4, (x)|=(x)>>8, (x)|=(x)>>16, ++(x))
 
@@ -79,7 +80,7 @@ int main() {
 #define xv_max(v) ((v).m)
 #define xv_data(v) ((v).a)
 
-#define xv_resize(type, v, s)  ((v).m = (s), (v).a = (type*)krealloc((v).a, sizeof(type) * (v).m))
+#define xv_resize(type, v, s)  ((v).m = (s), (v).a = (type*)xrealloc((v).a, sizeof(type) * (v).m))
 #define xv_trim(type, v) (xv_resize(type, v, xv_size(v)))
 
 #define xv_copy(type, v1, v0) do {							\
@@ -91,19 +92,19 @@ int main() {
 #define xv_push(type, v, x) do {									\
 		if ((v).n == (v).m) {										\
 			(v).m = (v).m? (v).m<<1 : 2;							\
-			(v).a = (type*)realloc((v).a, sizeof(type) * (v).m);	\
+			(v).a = (type*)xrealloc((v).a, sizeof(type) * (v).m);	\
 		}															\
 		(v).a[(v).n++] = (x);										\
 	} while (0)
 
 #define xv_pushp(type, v) ((((v).n == (v).m)?							\
 						   ((v).m = ((v).m? (v).m<<1 : 2),				\
-							(v).a = (type*)realloc((v).a, sizeof(type) * (v).m), 0)	\
+							(v).a = (type*)xrealloc((v).a, sizeof(type) * (v).m), 0)	\
 						   : 0), ((v).a + ((v).n++)))
 
 #define xv_a(type, v, i) (((v).m <= (size_t)(i)? \
 						  ((v).m = (v).n = (i) + 1, xv_roundup32((v).m), \
-						   (v).a = (type*)realloc((v).a, sizeof(type) * (v).m), 0) \
+						   (v).a = (type*)xrealloc((v).a, sizeof(type) * (v).m), 0) \
 						  : (v).n <= (size_t)(i)? (v).n = (i) + 1 \
 						  : 0), (v).a[(i)])
 

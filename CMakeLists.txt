@@ -25,6 +25,7 @@ cmake_dependent_option(
 )
 
 set(HDRS
+    include/xlib/alloc.h
     include/xlib/xassert.h
     include/xlib/xhash.h
     include/xlib/xvec.h
