@@ -79,7 +79,7 @@ int main() {
 #define xv_max(v) ((v).m)
 #define xv_data(v) ((v).a)
 
-#define xv_resize(type, v, s)  ((v).m = (s), (v).a = (type*)realloc((v).a, sizeof(type) * (v).m))
+#define xv_resize(type, v, s)  ((v).m = (s), (v).a = (type*)krealloc((v).a, sizeof(type) * (v).m))
 #define xv_trim(type, v) (xv_resize(type, v, xv_size(v)))
 
 #define xv_copy(type, v1, v0) do {							\
