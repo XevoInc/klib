@@ -9,19 +9,19 @@
  *            not by the set of function calls.
  *
  *            To describe options declare an array of
- *            structures, using following macros: #define
-
- *            DEFINE_BOOL(k,nm,f,fl) : boolean option
- *            key (char),long name, backing variable, flags
+ *            structures, using following macros:
  *
- *            DEFINE_UINT(k,nm,f,fl) : unsigned integer key
- *            (char),long name, backing variable, flags
+ *            DEFINE_BOOL(k,nm,f,fl) : boolean
+ *            short name,long name, backing variable, flags
+ *
+ *            DEFINE_UINT(k,nm,f,fl) : unsigned integer
+ *            short name,long name, backing variable, flags
  *
  *            DEFINE_INT(k,nm,f,fl)  : integer
- *            key (char),long name, backing variable, flags
+ *            short name,long name, backing variable, flags
  *
  *            DEFINE_DOUBLE(k,nm,f,fl): floating point double
- *            key (char),long name, backing variable, flags
+ *            short name,long name, backing variable, flags
  *
  *            DEFINE_STRING(k,nm,f,sz,fl):null terminated string
  *            key,long name, backing variable,sizeof of it,flags
