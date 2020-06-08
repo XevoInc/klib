@@ -59,10 +59,9 @@ extern "C"
 #define XARG_DEF_MAIL_ADDRESS "<foo@bar.org>"
 #endif
 
-// Max number of positional arguments to specify
+/* Max number of positional arguments. */
 #define XARG_MAX_POS_ARGS 25
 
-/* Maximum number of positional arguments */
 extern const char *argp_program_version;
 extern const char *argp_program_bug_address;
 
