@@ -108,4 +108,16 @@ int main() {
 						  : (v).n <= (size_t)(i)? (v).n = (i) + 1 \
 						  : 0), (v).a[(i)])
 
+/*
+ * Quickly delete an item at the given index, by copying the item at the end of
+ * the array to the index and then popping. Thus, this does *not* preserve the
+ * order of the array and thus should be used if and only that is okay for your
+ * use case.
+ */
+#define xv_quickdel(v, i) \
+    do { \
+        xv_A(v, i) = xv_A(v, xv_size(v)-1); \
+        (void) xv_pop(v); \
+    } while (0);
+
 #endif /* XLIB_XVEC_H_ */
