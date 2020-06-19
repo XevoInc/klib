@@ -71,6 +71,8 @@ int main() {
 
 #define xv_roundup32(x) (--(x), (x)|=(x)>>1, (x)|=(x)>>2, (x)|=(x)>>4, (x)|=(x)>>8, (x)|=(x)>>16, ++(x))
 
+#define XVEC_DEFINE(name, type) typedef xvec_t(type) name
+
 #define xvec_t(type) struct { size_t n, m; type *a; }
 #define xv_init(v) ((v).n = (v).m = 0, (v).a = 0)
 #define xv_destroy(v) free((v).a)
